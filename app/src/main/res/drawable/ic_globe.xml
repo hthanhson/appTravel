@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Globe Circle -->
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M60,60m-45,0a45,45 0,1 1,90 0a45,45 0,1 1,-90 0" />
+    
+    <!-- Globe Continents -->
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M30,45 Q40,35 50,45 Q55,40 65,45 Q75,35 85,45 Q90,50 85,55 Q75,65 65,55 Q55,60 50,55 Q40,65 30,55 Z" />
+    
+    <!-- Orbit Ring 1 -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M60,20 Q35,35 20,60 Q35,85 60,100 Q85,85 100,60 Q85,35 60,20" />
+    
+    <!-- Orbit Ring 2 -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M60,25 Q40,40 25,60 Q40,80 60,95 Q80,80 95,60 Q80,40 60,25" />
+    
+    <!-- Stars/Planes -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M25,25 L27,27 L25,29 L23,27 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M90,30 L92,32 L90,34 L88,32 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M95,75 L97,77 L95,79 L93,77 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,90 L32,92 L30,94 L28,92 Z" />
+    
+</vector>

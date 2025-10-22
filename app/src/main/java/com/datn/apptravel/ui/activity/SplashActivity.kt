@@ -1,0 +1,60 @@
+package com.datn.apptravel.ui.activity
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.datn.apptravel.R
+import com.datn.apptravel.databinding.ActivitySplashBinding
+import com.datn.apptravel.ui.base.BaseActivity
+import com.datn.apptravel.ui.viewmodel.SplashViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
+class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
+    
+    override val viewModel: SplashViewModel by viewModel()
+    
+    override fun getViewBinding(): ActivitySplashBinding = 
+        ActivitySplashBinding.inflate(layoutInflater)
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        // Hide action bar for fullscreen splash
+        supportActionBar?.hide()
+        
+        // Initialize splash screen with delay
+        viewModel.initSplash(SPLASH_DELAY)
+        
+        // Observe navigation events
+        observeNavigation()
+    }
+    
+    private fun observeNavigation() {
+        viewModel.navigateToNext.observe(this) { navigationState ->
+            when (navigationState) {
+                SplashViewModel.SplashNavigationState.ToLanguageSelection -> {
+                    startActivity(Intent(this, LanguageSelectionActivity::class.java))
+                    finish()
+                }
+                SplashViewModel.SplashNavigationState.ToOnboarding -> {
+                    startActivity(Intent(this, OnboardingActivity::class.java))
+                    finish()
+                }
+                SplashViewModel.SplashNavigationState.ToMain -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+            }
+        }
+    }
+    
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        // Disable back button on splash screen
+        // Do nothing - don't call super to prevent going back
+    }
+    
+    companion object {
+        private const val SPLASH_DELAY = 2000L // 2 seconds
+    }
+}

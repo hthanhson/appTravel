@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="160dp"
+    android:viewportWidth="240"
+    android:viewportHeight="160">
+
+    <!-- Map background -->
+    <path
+        android:fillColor="#E6F0FF"
+        android:pathData="M0,0h240v160h-240z" />
+
+    <!-- Plane -->
+    <path
+        android:fillColor="#4B89DC"
+        android:pathData="M180,60l-40,20l-80,-10l-20,10l80,20l-80,20l-20,10l40,0l60,-20l60,0l10,-30z" />
+
+    <!-- Suitcase -->
+    <path
+        android:fillColor="#5D9CEC"
+        android:pathData="M70,100h40v40h-40z" />
+    <path
+        android:fillColor="#4A89DC"
+        android:pathData="M70,100v40h40v-40z M75,105h30v30h-30z" />
+    <path
+        android:fillColor="#5D9CEC"
+        android:pathData="M80,95h20v10h-20z" />
+
+    <!-- Location pins -->
+    <path
+        android:fillColor="#ED5565"
+        android:pathData="M40,120a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z" />
+    <path
+        android:fillColor="#5D9CEC"
+        android:pathData="M140,80a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z" />
+    <path
+        android:fillColor="#48CFAD"
+        android:pathData="M180,120a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z" />
+
+    <!-- Magnifying glass -->
+    <path
+        android:fillColor="#5D9CEC"
+        android:pathData="M200,40a15,15 0 1,0 30,0a15,15 0 1,0 -30,0z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M205,40a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z" />
+    <path
+        android:fillColor="#5D9CEC"
+        android:pathData="M195,50l-10,10l5,5l10,-10z" />
+</vector>

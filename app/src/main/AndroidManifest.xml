@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".AppTravelApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppTravel">
+        
+        <!-- Splash Activity - Launcher -->
+        <activity
+            android:name=".ui.activity.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppTravel.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Language Selection Activity -->
+        <activity
+            android:name=".ui.activity.LanguageSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <!-- Onboarding Activity -->
+        <activity
+            android:name=".ui.activity.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <!-- Authentication Activities -->
+        <activity
+            android:name=".ui.auth.SignInActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <activity
+            android:name=".ui.auth.SignUpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <activity
+            android:name=".ui.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <!-- Main Activity -->
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+        
+        <!-- Create Trip Activity -->
+        <activity
+            android:name=".ui.trip.CreateTripActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+
+        <activity
+            android:name=".ui.tripdetail.TripDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+
+        <activity
+            android:name=".ui.planselection.PlanSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+            
+        <!-- Flight Detail Activity -->
+        <activity
+            android:name=".ui.plandetail.FlightDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+            
+        <!-- Lodging Detail Activity -->
+        <activity
+            android:name=".ui.plandetail.LodgingDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+            
+        <!-- Boat Detail Activity -->
+        <activity
+            android:name=".ui.plandetail.BoatDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+            
+        <!-- Train Detail Activity -->
+        <activity
+            android:name=".ui.plandetail.TrainDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppTravel.NoActionBarMain" />
+            
+    </application>
+
+</manifest>
