@@ -4,8 +4,8 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- Dấu + đã dịch sang trái 2 đơn vị tổng cộng -->
+    <!-- Dấu + nằm chính giữa icon -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M22,16h-6v6h-2v-6H8v-2h6V8h2v6h6v2z"/>
+        android:pathData="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
 </vector>

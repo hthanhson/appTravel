@@ -26,13 +26,18 @@ class SplashViewModel(private val authRepository: AuthRepository) : BaseViewMode
             delay(splashDelay)
             
             try {
-                val isFirstLaunch = true // For testing navigation flow
                 
-                // Always navigate to onboarding for testing purposes
-                _navigateToNext.value = SplashNavigationState.ToOnboarding
+                // Check if user is logged in
+                val isLoggedIn = authRepository.isLoggedIn()
+                
+                _navigateToNext.value = if (isLoggedIn) {
+                    SplashNavigationState.ToMain
+                } else {
+                    SplashNavigationState.ToOnboarding
+                }
             } catch (e: Exception) {
                 setError("Error checking login status: ${e.message}")
-                _navigateToNext.value = SplashNavigationState.ToOnboarding
+                _navigateToNext.value = SplashNavigationState.ToSignIn
             } finally {
                 setLoading(false)
             }
@@ -43,7 +48,7 @@ class SplashViewModel(private val authRepository: AuthRepository) : BaseViewMode
      * Sealed class for navigation states from splash screen
      */
     sealed class SplashNavigationState {
-        data object ToLanguageSelection : SplashNavigationState()
+        data object ToSignIn : SplashNavigationState()
         data object ToOnboarding : SplashNavigationState()
         data object ToMain : SplashNavigationState()
     }

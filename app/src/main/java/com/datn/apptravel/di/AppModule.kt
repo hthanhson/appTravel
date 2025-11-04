@@ -6,8 +6,6 @@ import com.datn.apptravel.data.local.SessionManager
 import com.datn.apptravel.domain.repository.AuthRepository
 import com.datn.apptravel.data.repository.AuthRepositoryImpl
 import com.datn.apptravel.ui.viewmodel.SplashViewModel
-import com.datn.apptravel.ui.viewmodel.LanguageViewModel
-import com.datn.apptravel.ui.viewmodel.OnboardingViewModel
 import com.datn.apptravel.ui.viewmodel.MainViewModel
 import com.datn.apptravel.ui.viewmodel.GuidesViewModel
 import com.datn.apptravel.ui.viewmodel.NotificationViewModel
@@ -21,6 +19,7 @@ import com.datn.apptravel.ui.viewmodel.FlightViewModel
 import com.datn.apptravel.ui.viewmodel.LodgingViewModel
 import com.datn.apptravel.ui.viewmodel.BoatViewModel
 import com.datn.apptravel.ui.viewmodel.TrainViewModel
+import com.datn.apptravel.ui.viewmodel.OnboardingViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -37,10 +36,10 @@ val appModule = module {
     
     // Repositories
     single<AuthRepository> { AuthRepositoryImpl(get()) }
+    single { com.datn.apptravel.data.repository.PlacesRepository(get()) }
     
     // ViewModels
     viewModel { SplashViewModel(get()) }
-    viewModel { LanguageViewModel(get()) }
     viewModel { OnboardingViewModel() }
     viewModel { MainViewModel(get()) }
     viewModel { GuidesViewModel() }
@@ -50,7 +49,7 @@ val appModule = module {
     viewModel { AuthViewModel() }
     viewModel { TripViewModel() }
     viewModel { TripDetailViewModel() }
-    viewModel { PlanViewModel() }
+    viewModel { PlanViewModel(get()) }
     viewModel { FlightViewModel() }
     viewModel { LodgingViewModel() }
     viewModel { BoatViewModel() }

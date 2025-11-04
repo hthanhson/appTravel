@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="600dp"
+    android:viewportWidth="360"
+    android:viewportHeight="600">
+    
+    <!-- Fill từ đầu đến cuối với gợn sóng ở top -->
+    <path
+        android:fillColor="#F6E8D7"
+        android:pathData="M0,0 L360,0 L360,600 L0,600 L0,100 Q90,40 180,80 Q270,120 360,80 L360,0 Z" />
+</vector>

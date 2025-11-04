@@ -41,78 +41,21 @@ class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsB
     
     override fun setupUI() {
         // Setup UI components
-        setupTabListeners()
         setupAddTripButton()
-        setupRecyclerView()
+        setupRecyclerViews()
         observeTrips()
         loadTrips()
     }
     
-    private fun setupTabListeners() {
-        binding.apply {
-            btnOngoingTrips.setOnClickListener {
-                if (currentTab != TAB_ONGOING) {
-                    selectTab(TAB_ONGOING)
-                    loadTrips()
-                }
-            }
-            
-            btnPastTrips.setOnClickListener {
-                if (currentTab != TAB_PAST) {
-                    selectTab(TAB_PAST)
-                    loadTrips()
-                }
-            }
-            
-            btnCommunity.setOnClickListener {
-                if (currentTab != TAB_COMMUNITY) {
-                    selectTab(TAB_COMMUNITY)
-                    loadTrips()
-                }
-            }
-        }
-    }
-    
     private fun setupAddTripButton() {
-        binding.btnAddTrip.setOnClickListener {
-            // Intent can be implemented later when CreateTripActivity is available
-            // For now, just toggle the empty state for demo purposes
-            showEmptyState(false)
+        binding.btnAddTripNow.setOnClickListener {
+            // Navigate to CreateTripActivity
+            val intent = Intent(requireContext(), com.datn.apptravel.ui.trip.CreateTripActivity::class.java)
+            startActivity(intent)
         }
-    }
-    
-    private fun selectTab(tabIndex: Int) {
-        currentTab = tabIndex
         
-        // Reset all tabs
-        binding.apply {
-            btnOngoingTrips.setBackgroundResource(0)
-            btnOngoingTrips.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey_600))
-            
-            btnPastTrips.setBackgroundResource(0)
-            btnPastTrips.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey_600))
-            
-            btnCommunity.setBackgroundResource(0)
-            btnCommunity.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey_600))
-            
-            // Set the selected tab
-            when (tabIndex) {
-                TAB_ONGOING -> {
-                    btnOngoingTrips.setBackgroundResource(R.drawable.tab_selected_background)
-                    btnOngoingTrips.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
-                    tvEmptyStateTitle.text = "You don't have any Ongoing Trips yet!"
-                }
-                TAB_PAST -> {
-                    btnPastTrips.setBackgroundResource(R.drawable.tab_selected_background)
-                    btnPastTrips.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
-                    tvEmptyStateTitle.text = "You don't have any Past Trips yet!"
-                }
-                TAB_COMMUNITY -> {
-                    btnCommunity.setBackgroundResource(R.drawable.tab_selected_background)
-                    btnCommunity.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
-                    tvEmptyStateTitle.text = "No Community Trips available!"
-                }
-            }
+        binding.tvViewAll?.setOnClickListener {
+            // Show all past trips
         }
     }
     
@@ -131,19 +74,24 @@ class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsB
     }
     
     /**
-     * Setup RecyclerView for trips
+     * Setup RecyclerViews for Adventure and Past Trips
      */
-    private fun setupRecyclerView() {
+    private fun setupRecyclerViews() {
+        // Setup Adventure RecyclerView (horizontal)
+        binding.rvAdventure.apply {
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
+        }
+        
+        // Setup Past Trips RecyclerView (horizontal)
         tripAdapter = com.datn.apptravel.ui.adapter.TripAdapter(
             emptyList()
         ) { trip ->
-            // Navigate to TripDetailActivity with the selected trip
             navigateToTripDetail(trip)
         }
         
-        binding.rvTrips.apply {
+        binding.rvPastTrips.apply {
             adapter = tripAdapter
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
         }
     }
     
@@ -162,27 +110,12 @@ class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsB
      */
     private fun observeTrips() {
         viewModel.trips.observe(viewLifecycleOwner) { trips ->
-            // If trips list is empty, show empty state
-            showEmptyState(trips.isEmpty())
-            
-            // If trips exist, update the adapter with new data
+            // If trips exist, update the adapter and show RecyclerView
             if (trips.isNotEmpty()) {
                 tripAdapter.updateTrips(trips)
-            }
-        }
-    }
-    
-    /**
-     * Show or hide empty state
-     */
-    private fun showEmptyState(show: Boolean) {
-        binding.apply {
-            if (show) {
-                emptyStateContainer.visibility = View.VISIBLE
-                rvTrips.visibility = View.GONE
+                binding.rvPastTrips.visibility = View.VISIBLE
             } else {
-                emptyStateContainer.visibility = View.GONE
-                rvTrips.visibility = View.VISIBLE
+                binding.rvPastTrips.visibility = View.GONE
             }
         }
     }

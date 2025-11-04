@@ -25,27 +25,21 @@ class OnboardingViewModel : BaseViewModel() {
      * Load onboarding data
      */
     private fun loadOnboardingData() {
+        val commonTitle = "Welcome\nto Trip Planner"
+        val commonDesc = "A perfect travel companion that simplifies trip planning and helps you explore incredible places around the world"
         val data = listOf(
             OnboardingData(
                 imageRes = R.drawable.onboarding_1,
-                title = "Welcome\nto Trip Planner",
-                description = "The ultimate travel app to make planning easy, discover amazing destinations.",
+                title = commonTitle,
+                description = commonDesc,
                 showBackButton = false,
                 showNextButton = true,
                 showStartButton = false
             ),
             OnboardingData(
                 imageRes = R.drawable.onboarding_2,
-                title = "We are the first",
-                description = "The ultimate travel app to make planning easy, discover amazing destinations and enjoy to the fullest.",
-                showBackButton = true,
-                showNextButton = true,
-                showStartButton = false
-            ),
-            OnboardingData(
-                imageRes = R.drawable.onboarding_3,
                 title = "Get started",
-                description = "The ultimate travel app to make planning easy, discover amazing destinations and enjoy to the fullest.",
+                description = commonDesc,
                 showBackButton = true,
                 showNextButton = false,
                 showStartButton = true

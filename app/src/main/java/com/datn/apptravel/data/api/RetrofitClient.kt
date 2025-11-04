@@ -1,5 +1,6 @@
 package com.datn.apptravel.data.api
 
+import com.datn.apptravel.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit
  * Singleton Retrofit client for making API requests
  */
 object RetrofitClient {
-    private const val BASE_URL = "https://your-api-url.com/" // Replace with your actual API base URL
+    private val BASE_URL = BuildConfig.GEOAPIFY_BASE_URL
     private const val TIMEOUT = 30L // seconds
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

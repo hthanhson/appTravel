@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/snow_background"
     android:fillViewport="true"
     tools:context=".ui.auth.SignUpActivity">
 
@@ -13,27 +12,42 @@
         android:layout_height="wrap_content"
         android:minHeight="800dp">
 
-        <!-- Background overlay -->
-        <View
+        <!-- Full Screen Mountain Background Image -->
+        <ImageView
+            android:id="@+id/ivMountainBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Background overlay with wavy top border -->
+        <ImageView
             android:id="@+id/backgroundOverlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/curved_overlay_bottom"
+            android:src="@drawable/wave_top"
+            android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.75"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="150dp"/>
 
         <!-- Title -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="200dp"
             android:text="Create an account"
-            android:textColor="#1F2937"
+            android:textColor="@color/dark_brown"
             android:textSize="28sp"
             android:textStyle="bold"
+            android:fontFamily="serif"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/backgroundOverlay" />
@@ -229,7 +243,7 @@
             android:layout_height="56dp"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="24dp"
-            android:background="@drawable/btn_primary_background"
+            android:background="@drawable/btn_signin_brown"
             android:text="Register"
             android:textColor="@android:color/white"
             android:textSize="16sp"
@@ -265,7 +279,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sign in"
-                android:textColor="#2563EB"
+                android:textColor="@color/brown_warm"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

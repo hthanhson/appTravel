@@ -1,21 +1,31 @@
 package com.datn.apptravel.ui.planselection
 
-import android.content.Intent
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.View
+import android.preference.PreferenceManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.datn.apptravel.R
+import com.datn.apptravel.data.model.PlanType
 import com.datn.apptravel.databinding.ActivityPlanSelectionBinding
-import com.datn.apptravel.ui.fragment.TripsFragment
-import com.datn.apptravel.ui.plandetail.BoatDetailActivity
-import com.datn.apptravel.ui.plandetail.FlightDetailActivity
-import com.datn.apptravel.ui.plandetail.LodgingDetailActivity
-import com.datn.apptravel.ui.plandetail.TrainDetailActivity
 import com.datn.apptravel.ui.viewmodel.PlanViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 /**
- * Activity for selecting trip plans (flights, lodging, etc.)
+ * Activity for displaying map and selecting places by plan type
  */
 class PlanSelectionActivity : AppCompatActivity() {
     
@@ -23,15 +33,54 @@ class PlanSelectionActivity : AppCompatActivity() {
     private var tripId: String? = null
     private lateinit var binding: ActivityPlanSelectionBinding
     
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var myLocationOverlay: MyLocationNewOverlay? = null
+    
+    private var currentLatitude = 21.0285 // Default to Hanoi
+    private var currentLongitude = 105.8542
+    
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Initialize OSMDroid configuration
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
+        
         binding = ActivityPlanSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        // Get trip ID from intent - use the key "tripId" as passed from TripDetailActivity
-        tripId = intent.getStringExtra("tripId") ?: intent.getStringExtra(TripsFragment.EXTRA_TRIP_ID)
+        // Get trip ID from intent
+        tripId = intent.getStringExtra("tripId")
         
+        // Initialize location client
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        
+        setupMap()
         setupUI()
+        setupObservers()
+        checkLocationPermission()
+    }
+    
+    /**
+     * Setup the map
+     */
+    private fun setupMap() {
+        binding.mapView.apply {
+            setTileSource(TileSourceFactory.MAPNIK)
+            setMultiTouchControls(true)
+            controller.setZoom(15.0)
+            
+            // Set default position (Hanoi)
+            controller.setCenter(GeoPoint(currentLatitude, currentLongitude))
+        }
+        
+        // Add location overlay
+        myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), binding.mapView)
+        myLocationOverlay?.enableMyLocation()
+        binding.mapView.overlays.add(myLocationOverlay)
     }
     
     /**
@@ -43,118 +92,161 @@ class PlanSelectionActivity : AppCompatActivity() {
             finish()
         }
         
-        // Set up plan options click listeners
-        setupPlanClickListeners()
+        // Set up semi-circle menu
+        // Menu now automatically shows all 13 plan types, 3 at a time
+        binding.semiCircleMenu.setOnPlanSelectedListener { planType ->
+            // When plan type changes, reload places with current search query (if any)
+            viewModel.selectPlanType(planType, currentLatitude, currentLongitude)
+        }
+        
+        // Set up search view
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    if (it.isNotBlank()) {
+                        // Search location and filter by selected plan type
+                        viewModel.searchPlaces(it, currentLatitude, currentLongitude)
+                        
+                        // Hide keyboard
+                        binding.searchView.clearFocus()
+                    }
+                }
+                return true
+            }
+            
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Clear search when text is empty
+                if (newText.isNullOrBlank()) {
+                    viewModel.clearSearch(currentLatitude, currentLongitude)
+                }
+                return true
+            }
+        })
+        
+        // Don't load initial data until we have GPS location
+        // Will be loaded in getCurrentLocation() after GPS is ready
     }
     
     /**
-     * Set up click listeners for plan options
+     * Setup observers for ViewModel LiveData
      */
-    private fun setupPlanClickListeners() {
-        // Previously used options
-        
-        // Lodging option
-        binding.layoutLodging.setOnClickListener {
-            navigateToLodgingDetail()
+    private fun setupObservers() {
+        viewModel.places.observe(this) { places ->
+            // Clear existing markers (keep location overlay)
+            binding.mapView.overlays.removeAll { it is Marker }
+            
+            // Add markers for each place
+            places.forEach { place ->
+                val marker = Marker(binding.mapView)
+                marker.position = GeoPoint(place.latitude, place.longitude)
+                marker.title = place.name
+                marker.snippet = place.address
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                
+                binding.mapView.overlays.add(marker)
+            }
+            
+            binding.mapView.invalidate()
+            
+            if (places.isNotEmpty()) {
+                val planType = viewModel.selectedPlanType.value?.displayName ?: "places"
+                Toast.makeText(this, "Found ${places.size} $planType", Toast.LENGTH_SHORT).show()
+                
+                // Center on first result if it's a search
+                places.firstOrNull()?.let {
+                    binding.mapView.controller.animateTo(GeoPoint(it.latitude, it.longitude))
+                }
+            } else {
+                Toast.makeText(this, "No places found", Toast.LENGTH_SHORT).show()
+            }
         }
         
-        // Flight option
-        binding.layoutFlight.setOnClickListener {
-            navigateToFlightDetail()
+        viewModel.errorMessage.observe(this) { error ->
+            if (error.isNotBlank()) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+            }
         }
         
-        // Restaurant option
-        binding.layoutRestaurant.setOnClickListener {
-            // For now, just show a toast
-            android.widget.Toast.makeText(this, "Restaurant feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
         }
         
-        // More options
-        
-        // Tour option
-        binding.layoutTour?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Tour feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-        
-        // Car Rental option
-        binding.layoutCarRental?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Car Rental feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-        
-        // Activity option
-        binding.layoutActivity?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Activities feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-
-        // Boat option
-        binding.layoutBoat?.setOnClickListener {
-            navigateToBoatDetail()
-        }
-        
-        // Train option
-        binding.layoutTrain?.setOnClickListener {
-            navigateToTrainDetail()
-        }
-
-        // Meeting option
-        binding.layoutMeeting?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Meeting feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-        
-        // Note option
-        binding.layoutNote?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Note feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-
-        // Theater option
-        binding.layoutTheater?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Theater feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-
-        // Shopping option
-        binding.layoutShopping?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Shopping feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
-        }
-
-        // Concert option
-        binding.layoutConcert?.setOnClickListener {
-            android.widget.Toast.makeText(this, "Concert feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
+        viewModel.selectedPlanType.observe(this) { planType ->
+            // Update UI or show current selection
+            // Toast.makeText(this, "Selected: ${planType.displayName}", Toast.LENGTH_SHORT).show()
         }
     }
     
     /**
-     * Navigate to Flight Detail screen
+     * Check and request location permission
      */
-    private fun navigateToFlightDetail() {
-        val intent = Intent(this, FlightDetailActivity::class.java)
-        intent.putExtra("tripId", tripId)
-        startActivity(intent)
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            getCurrentLocation()
+        }
     }
     
     /**
-     * Navigate to Lodging Detail screen
+     * Get current location
      */
-    private fun navigateToLodgingDetail() {
-        val intent = Intent(this, LodgingDetailActivity::class.java)
-        intent.putExtra("tripId", tripId)
-        startActivity(intent)
+    private fun getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    currentLatitude = it.latitude
+                    currentLongitude = it.longitude
+                    
+                    // Update map center
+                    binding.mapView.controller.setCenter(GeoPoint(currentLatitude, currentLongitude))
+                    
+                    // Reload places with new location
+                    val currentPlanType = binding.semiCircleMenu.getSelectedPlanType()
+                    viewModel.selectPlanType(currentPlanType, currentLatitude, currentLongitude)
+                }
+            }
+        }
     }
     
-    /**
-     * Navigate to Boat Detail screen
-     */
-    private fun navigateToBoatDetail() {
-        val intent = Intent(this, BoatDetailActivity::class.java)
-        intent.putExtra("tripId", tripId)
-        startActivity(intent)
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation()
+            }
+        }
     }
     
-    /**
-     * Navigate to Train Detail screen
-     */
-    private fun navigateToTrainDetail() {
-        val intent = Intent(this, TrainDetailActivity::class.java)
-        intent.putExtra("tripId", tripId)
-        startActivity(intent)
+    
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.onResume()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.onPause()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.mapView.onDetach()
     }
 }

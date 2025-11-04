@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/snow_background"
     android:fillViewport="true"
     tools:context=".ui.auth.SignInActivity">
 
@@ -13,15 +12,27 @@
         android:layout_height="wrap_content"
         android:minHeight="800dp">
 
-        <!-- Background overlay -->
+        <!-- Full Screen Mountain Background Image -->
+        <ImageView
+            android:id="@+id/ivMountainBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Background overlay with wavy top border - OVERLAYS the mountain image -->
         <View
             android:id="@+id/backgroundOverlay"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/curved_overlay_bottom"
+            android:background="@drawable/curved_overlay_beige"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.65"
+            app:layout_constraintHeight_percent="0.60"
             app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Title -->
@@ -29,14 +40,15 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Sign in"
-            android:textColor="#1F2937"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/backgroundOverlay" />
+            android:layout_marginTop="12dp"
+        android:text="Sign in"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:fontFamily="serif"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/backgroundOverlay" />
 
         <!-- Email Input -->
         <com.google.android.material.textfield.TextInputLayout
@@ -116,7 +128,7 @@
             android:layout_height="56dp"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="32dp"
-            android:background="@drawable/btn_primary_background"
+            android:background="@drawable/btn_signin_brown"
             android:text="Sign in"
             android:textColor="@android:color/white"
             android:textSize="16sp"
@@ -145,25 +157,6 @@
             app:layout_constraintTop_toBottomOf="@id/btnSignIn"
             app:strokeColor="#E5E7EB" />
 
-        <!-- Continue as Guest Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinueAsGuest"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:text="Continue as Guest"
-            android:textColor="#374151"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_person"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnGoogleSignIn"
-            app:strokeColor="#E5E7EB" />
-
         <!-- Bottom Links -->
         <LinearLayout
             android:layout_width="0dp"
@@ -176,7 +169,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnContinueAsGuest">
+            app:layout_constraintTop_toBottomOf="@id/btnGoogleSignIn">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -190,9 +183,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sign up"
-                android:textColor="#2563EB"
+                android:textColor="#8B7355"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground" />
 
             <TextView
                 android:layout_width="0dp"
@@ -203,10 +200,14 @@
                 android:id="@+id/tvForgotPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Forgot password"
-                android:textColor="#2563EB"
+                android:text="Forgot password?"
+                android:textColor="#8B7355"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground" />
 
         </LinearLayout>
 

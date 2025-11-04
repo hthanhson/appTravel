@@ -39,9 +39,8 @@ class SignInActivity : AppCompatActivity() {
                 Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show()
             }
         }
-        
-        // Auto sign-in for testing (remove this in production)
-        viewModel.signIn("test@example.com", "password")
+        viewModel.signIn("a@gmail.com","abc")
+        // Removed auto sign-in to prevent automatic navigation to dashboard
     }
     
     private fun setupUI() {
