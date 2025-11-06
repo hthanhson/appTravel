@@ -14,9 +14,6 @@ import com.datn.apptravel.ui.viewmodel.TripDetailViewModel
 import com.datn.apptravel.util.Trip
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Activity for displaying trip details
- */
 class TripDetailActivity : AppCompatActivity() {
     
     private val viewModel: TripDetailViewModel by viewModel()
@@ -98,10 +95,7 @@ class TripDetailActivity : AppCompatActivity() {
             }
         }
     }
-    
-    /**
-     * Update UI with trip details
-     */
+
     private fun updateUI(trip: Trip?) {
         if (trip == null) {
             binding.tvTitle.text = getString(R.string.app_name)
@@ -119,10 +113,7 @@ class TripDetailActivity : AppCompatActivity() {
             // For now, we'll use a placeholder
         }
     }
-    
-    /**
-     * Show trip menu options
-     */
+
     private fun showTripMenu() {
         val popupMenu = androidx.appcompat.widget.PopupMenu(this, binding.btnMenu)
         popupMenu.menuInflater.inflate(R.menu.trip_detail_menu, popupMenu.menu)
@@ -151,9 +142,6 @@ class TripDetailActivity : AppCompatActivity() {
         popupMenu.show()
     }
 
-    /**
-     * Show delete confirmation dialog
-     */
     private fun showDeleteConfirmation() {
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Delete Trip")
@@ -167,9 +155,6 @@ class TripDetailActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Share trip with others
-     */
     private fun shareTrip() {
         val trip = viewModel.tripDetails.value
         val shareText = if (trip != null) {
@@ -185,10 +170,7 @@ class TripDetailActivity : AppCompatActivity() {
         }
         startActivity(Intent.createChooser(shareIntent, "Share trip via"))
     }
-    
-    /**
-     * Navigate to Plan Selection screen
-     */
+
     private fun navigateToPlanSelection() {
         val intent = Intent(this, PlanSelectionActivity::class.java)
         intent.putExtra("tripId", tripId)

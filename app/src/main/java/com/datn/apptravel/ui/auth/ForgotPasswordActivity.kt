@@ -11,9 +11,7 @@ import com.datn.apptravel.R
 import com.datn.apptravel.ui.viewmodel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Activity for password reset
- */
+
 class ForgotPasswordActivity : AppCompatActivity() {
     
     private val viewModel: AuthViewModel by viewModel()

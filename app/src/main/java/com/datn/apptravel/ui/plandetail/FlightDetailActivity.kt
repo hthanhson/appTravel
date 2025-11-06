@@ -11,9 +11,6 @@ import com.datn.apptravel.ui.viewmodel.FlightViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
-/**
- * Activity for flight details and booking
- */
 class FlightDetailActivity : AppCompatActivity() {
     
     private val viewModel: FlightViewModel by viewModel()
@@ -112,10 +109,7 @@ class FlightDetailActivity : AppCompatActivity() {
             targetEditText.setText(formattedTime)
         }, hour, minute, true).show()
     }
-    
-    /**
-     * Save flight details to trip
-     */
+
     private fun saveFlightDetails() {
         // Validate inputs
         if (binding.etDepartureDate.text.isNullOrEmpty() || binding.etAirline.text.isNullOrEmpty()) {
@@ -142,10 +136,7 @@ class FlightDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Trip ID is missing", Toast.LENGTH_SHORT).show()
         }
     }
-    
-    /**
-     * Load flight options
-     */
+
     private fun loadFlightOptions() {
         // Here we would load flight options based on trip details
         viewModel.getFlightOptions(

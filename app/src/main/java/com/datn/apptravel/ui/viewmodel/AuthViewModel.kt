@@ -2,64 +2,121 @@ package com.datn.apptravel.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.datn.apptravel.data.model.request.ForgotPasswordRequest
+import com.datn.apptravel.data.model.request.GoogleTokenRequest
+import com.datn.apptravel.data.model.request.LoginRequest
+import com.datn.apptravel.data.model.request.SignUpRequest
+import com.datn.apptravel.data.repository.AuthRepository
 import com.datn.apptravel.ui.base.BaseViewModel
+import kotlinx.coroutines.launch
 
-/**
- * ViewModel for authentication operations
- */
-class AuthViewModel : BaseViewModel() {
-    
+
+class AuthViewModel(
+    private val authRepository: AuthRepository
+) : BaseViewModel() {
+
     // Sign in result
-    private val _signInResult = MutableLiveData<Boolean>()
-    val signInResult: LiveData<Boolean> = _signInResult
-    
+    private val _signInResult = MutableLiveData<Result<String>>()
+    val signInResult: LiveData<Result<String>> = _signInResult
+
     // Sign up result
-    private val _signUpResult = MutableLiveData<Boolean>()
-    val signUpResult: LiveData<Boolean> = _signUpResult
-    
+    private val _signUpResult = MutableLiveData<Result<String>>()
+    val signUpResult: LiveData<Result<String>> = _signUpResult
+
+    // Google sign in result
+    private val _googleSignInResult = MutableLiveData<Result<String>>()
+    val googleSignInResult: LiveData<Result<String>> = _googleSignInResult
+
     // Reset password result
     private val _resetPasswordResult = MutableLiveData<Boolean>()
     val resetPasswordResult: LiveData<Boolean> = _resetPasswordResult
-    
-    /**
-     * Sign in with email and password
-     */
+
     fun signIn(email: String, password: String) {
-        setLoading(true)
-        
-        // Simulated API call with delay
-        android.os.Handler().postDelayed({
-            // Simulate successful sign in
-            _signInResult.value = true
-            setLoading(false)
-        }, 2000)
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                val request = LoginRequest(email, password)
+                val response = authRepository.login(request)
+
+                if (response.isSuccessful) {
+                    val authResponse = response.body()
+                    _signInResult.value = Result.success("Sign in successful")
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Sign in failed"
+                    _signInResult.value = Result.failure(Exception(errorMsg))
+                }
+            } catch (e: Exception) {
+                _signInResult.value = Result.failure(e)
+            } finally {
+                setLoading(false)
+            }
+        }
     }
-    
-    /**
-     * Sign up with user details
-     */
+
+
     fun signUp(firstName: String, lastName: String, email: String, password: String) {
-        setLoading(true)
-        
-        // Simulated API call with delay
-        android.os.Handler().postDelayed({
-            // Simulate successful sign up
-            _signUpResult.value = true
-            setLoading(false)
-        }, 2000)
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                val request = SignUpRequest(firstName, lastName, email, password)
+                val response = authRepository.signUp(request)
+
+                if (response.isSuccessful) {
+                    val authResponse = response.body()
+                    _signUpResult.value = Result.success("Sign up successful")
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Sign up failed"
+                    _signUpResult.value = Result.failure(Exception(errorMsg))
+                }
+            } catch (e: Exception) {
+                _signUpResult.value = Result.failure(e)
+            } finally {
+                setLoading(false)
+            }
+        }
     }
-    
-    /**
-     * Reset user password
-     */
+
+    fun signInWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                val request = GoogleTokenRequest(idToken)
+                val response = authRepository.googleSignIn(request)
+
+                if (response.isSuccessful) {
+                    val authResponse = response.body()
+                    _googleSignInResult.value = Result.success("Google sign in successful")
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Google sign in failed"
+                    _googleSignInResult.value = Result.failure(Exception(errorMsg))
+                }
+            } catch (e: Exception) {
+                _googleSignInResult.value = Result.failure(e)
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+
     fun resetPassword(email: String) {
-        setLoading(true)
-        
-        // Simulated API call with delay
-        android.os.Handler().postDelayed({
-            // Simulate successful password reset
-            _resetPasswordResult.value = true
-            setLoading(false)
-        }, 2000)
+        viewModelScope.launch {
+            setLoading(true);
+            try {
+                val request = ForgotPasswordRequest(email);
+                val response = authRepository.forgotPassword(request)
+                if (response.isSuccessful) {
+                    _resetPasswordResult.value = true
+                } else {
+                    _resetPasswordResult.value = false
+                }
+
+            } catch (e: Exception) {
+                _resetPasswordResult.value =false
+            }finally {
+                setLoading(false)
+            }
+        }
     }
 }

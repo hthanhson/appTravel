@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.datn.apptravel.ui.base.BaseViewModel
 
-/**
- * ViewModel for lodging operations
- */
 class LodgingViewModel : BaseViewModel() {
     
     // Lodging options
@@ -16,10 +13,7 @@ class LodgingViewModel : BaseViewModel() {
     // Save lodging result
     private val _saveLodgingResult = MutableLiveData<Boolean>()
     val saveLodgingResult: LiveData<Boolean> = _saveLodgingResult
-    
-    /**
-     * Get lodging options based on search criteria
-     */
+
     fun getLodgingOptions(
         location: String,
         checkIn: String,
@@ -35,10 +29,7 @@ class LodgingViewModel : BaseViewModel() {
             setLoading(false)
         }, 2000)
     }
-    
-    /**
-     * Filter lodging options by type
-     */
+
     fun filterByType(type: String) {
         setLoading(true)
         
@@ -49,10 +40,7 @@ class LodgingViewModel : BaseViewModel() {
             setLoading(false)
         }, 500)
     }
-    
-    /**
-     * Sort lodging options by criteria
-     */
+
     fun sortBy(criteria: String) {
         setLoading(true)
         
@@ -63,10 +51,7 @@ class LodgingViewModel : BaseViewModel() {
             setLoading(false)
         }, 500)
     }
-    
-    /**
-     * Save lodging details to trip
-     */
+
     fun saveLodging(tripId: String, lodgingDetails: String) {
         setLoading(true)
         
@@ -78,10 +63,7 @@ class LodgingViewModel : BaseViewModel() {
             setLoading(false)
         }, 1500)
     }
-    
-    /**
-     * Add existing lodging to trip (when selecting from options)
-     */
+
     fun addLodgingToTrip(tripId: String, lodgingId: String) {
         setLoading(true)
         

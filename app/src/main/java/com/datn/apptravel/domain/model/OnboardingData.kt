@@ -1,8 +1,5 @@
 package com.datn.apptravel.domain.model
 
-/**
- * Data class for onboarding screen data
- */
 data class OnboardingData(
     val imageRes: Int,
     val title: String,

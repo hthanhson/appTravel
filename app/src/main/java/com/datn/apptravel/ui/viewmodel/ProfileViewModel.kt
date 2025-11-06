@@ -5,22 +5,13 @@ import com.datn.apptravel.domain.repository.AuthRepository
 import com.datn.apptravel.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for ProfileFragment
- */
 class ProfileViewModel(private val authRepository: AuthRepository) : BaseViewModel() {
-    
-    /**
-     * Get user profile data
-     */
+
     fun getUserProfile() {
         // TODO: Implement with repository
         setLoading(false)
     }
-    
-    /**
-     * Logout user
-     */
+
     fun logout() {
         viewModelScope.launch {
             setLoading(true)

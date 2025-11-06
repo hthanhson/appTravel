@@ -8,9 +8,6 @@ import com.datn.apptravel.ui.tripdetail.TripDetailActivity
 import com.datn.apptravel.ui.viewmodel.TripViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Activity for creating a new trip
- */
 class CreateTripActivity : AppCompatActivity() {
     
     private val viewModel: TripViewModel by viewModel()
@@ -25,10 +22,7 @@ class CreateTripActivity : AppCompatActivity() {
             }
         }
     }
-    
-    /**
-     * Navigate to Trip Detail screen
-     */
+
     private fun navigateToTripDetail(tripId: String) {
         val intent = Intent(this, TripDetailActivity::class.java)
         intent.putExtra("tripId", tripId)

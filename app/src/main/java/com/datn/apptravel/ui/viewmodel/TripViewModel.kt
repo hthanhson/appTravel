@@ -4,18 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.datn.apptravel.ui.base.BaseViewModel
 
-/**
- * ViewModel for trip operations
- */
 class TripViewModel : BaseViewModel() {
     
     // Create trip result
     private val _createTripResult = MutableLiveData<String?>()
     val createTripResult: LiveData<String?> = _createTripResult
-    
-    /**
-     * Create a new trip
-     */
+
     fun createTrip(name: String, destination: String, startDate: String, endDate: String) {
         setLoading(true)
         
@@ -26,10 +20,7 @@ class TripViewModel : BaseViewModel() {
             setLoading(false)
         }, 2000)
     }
-    
-    /**
-     * Get user trips
-     */
+
     fun getTrips() {
         setLoading(true)
         

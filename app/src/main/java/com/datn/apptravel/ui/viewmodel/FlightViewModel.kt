@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.datn.apptravel.ui.base.BaseViewModel
 
-/**
- * ViewModel for flight operations
- */
 class FlightViewModel : BaseViewModel() {
     
     // Flight options
@@ -16,10 +13,6 @@ class FlightViewModel : BaseViewModel() {
     // Add flight result
     private val _addFlightResult = MutableLiveData<Boolean>()
     val addFlightResult: LiveData<Boolean> = _addFlightResult
-    
-    /**
-     * Get flight options based on search criteria
-     */
     fun getFlightOptions(
         origin: String,
         destination: String,
@@ -36,10 +29,7 @@ class FlightViewModel : BaseViewModel() {
             setLoading(false)
         }, 2000)
     }
-    
-    /**
-     * Add flight to trip
-     */
+
     fun addFlightToTrip(tripId: String, flightDetails: String) {
         setLoading(true)
         

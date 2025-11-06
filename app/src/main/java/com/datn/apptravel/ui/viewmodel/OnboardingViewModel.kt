@@ -6,9 +6,6 @@ import com.datn.apptravel.R
 import com.datn.apptravel.domain.model.OnboardingData
 import com.datn.apptravel.ui.base.BaseViewModel
 
-/**
- * ViewModel for onboarding screens
- */
 class OnboardingViewModel : BaseViewModel() {
     
     private val _onboardingData = MutableLiveData<List<OnboardingData>>()
@@ -20,10 +17,7 @@ class OnboardingViewModel : BaseViewModel() {
     init {
         loadOnboardingData()
     }
-    
-    /**
-     * Load onboarding data
-     */
+
     private fun loadOnboardingData() {
         val commonTitle = "Welcome\nto Trip Planner"
         val commonDesc = "A perfect travel companion that simplifies trip planning and helps you explore incredible places around the world"
@@ -48,10 +42,7 @@ class OnboardingViewModel : BaseViewModel() {
         
         _onboardingData.value = data
     }
-    
-    /**
-     * Navigate to the next onboarding page
-     */
+
     fun navigateToNextPage() {
         val currentPos = _currentPosition.value ?: 0
         val maxPosition = _onboardingData.value?.size?.minus(1) ?: 0
@@ -60,10 +51,7 @@ class OnboardingViewModel : BaseViewModel() {
             _currentPosition.value = currentPos + 1
         }
     }
-    
-    /**
-     * Navigate to the previous onboarding page
-     */
+
     fun navigateToPreviousPage() {
         val currentPos = _currentPosition.value ?: 0
         
@@ -71,10 +59,7 @@ class OnboardingViewModel : BaseViewModel() {
             _currentPosition.value = currentPos - 1
         }
     }
-    
-    /**
-     * Update current position
-     */
+
     fun updatePosition(position: Int) {
         _currentPosition.value = position
     }

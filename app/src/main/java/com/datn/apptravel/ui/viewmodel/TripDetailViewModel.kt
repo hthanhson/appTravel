@@ -11,9 +11,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/**
- * ViewModel for trip detail operations
- */
 class TripDetailViewModel : BaseViewModel() {
     
     // Trip details
@@ -23,10 +20,7 @@ class TripDetailViewModel : BaseViewModel() {
     // Schedule days
     private val _scheduleDays = MutableLiveData<List<ScheduleDay>>()
     val scheduleDays: LiveData<List<ScheduleDay>> = _scheduleDays
-    
-    /**
-     * Get trip details by ID
-     */
+
     fun getTripDetails(tripId: String) {
         setLoading(true)
         
@@ -44,10 +38,7 @@ class TripDetailViewModel : BaseViewModel() {
             setLoading(false)
         }, 1000)
     }
-    
-    /**
-     * Generate sample schedule days for a trip
-     */
+
     private fun generateSampleScheduleDays(trip: Trip?) {
         if (trip == null) {
             _scheduleDays.value = emptyList()
@@ -142,10 +133,7 @@ class TripDetailViewModel : BaseViewModel() {
         
         _scheduleDays.value = scheduleDaysList
     }
-    
-    /**
-     * Get next day from a date string
-     */
+
     private fun getNextDay(dateString: String, daysToAdd: Int): String {
         try {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -160,10 +148,7 @@ class TripDetailViewModel : BaseViewModel() {
             return dateString
         }
     }
-    
-    /**
-     * Update trip details
-     */
+
     fun updateTripDetails(tripId: String, updatedDetails: Map<String, Any>) {
         setLoading(true)
         

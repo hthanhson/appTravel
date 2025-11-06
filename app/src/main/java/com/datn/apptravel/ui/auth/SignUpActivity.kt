@@ -13,9 +13,6 @@ import com.datn.apptravel.ui.activity.MainActivity
 import com.datn.apptravel.ui.viewmodel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Activity for user sign up
- */
 class SignUpActivity : AppCompatActivity() {
     
     private val viewModel: AuthViewModel by viewModel()
@@ -28,12 +25,12 @@ class SignUpActivity : AppCompatActivity() {
         setupUI()
         
         // Observe sign up result
-        viewModel.signUpResult.observe(this) { success ->
-            if (success) {
+        viewModel.signUpResult.observe(this) { result ->
+            result.onSuccess {
                 Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show()
                 navigateToMain()
-            } else {
-                Toast.makeText(this, "Sign up failed", Toast.LENGTH_SHORT).show()
+            }.onFailure { error ->
+                Toast.makeText(this, "Sign up failed: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -41,9 +38,9 @@ class SignUpActivity : AppCompatActivity() {
     private fun setupUI() {
         // Set up register button
         findViewById<Button>(R.id.btnRegister)?.setOnClickListener {
-            val firstName = findViewById<EditText>(R.id.etFirstName)?.text.toString()
-            val lastName = findViewById<EditText>(R.id.etLastName)?.text.toString()
-            val email = findViewById<EditText>(R.id.etEmail)?.text.toString()
+            val firstName = findViewById<EditText>(R.id.etFirstName)?.text.toString().trim()
+            val lastName = findViewById<EditText>(R.id.etLastName)?.text.toString().trim()
+            val email = findViewById<EditText>(R.id.etEmail)?.text.toString().trim()
             val password = findViewById<EditText>(R.id.etPassword)?.text.toString()
             val confirmPassword = findViewById<EditText>(R.id.etConfirmPassword)?.text.toString()
             val termsAccepted = findViewById<CheckBox>(R.id.cbTerms)?.isChecked ?: false
@@ -61,6 +58,9 @@ class SignUpActivity : AppCompatActivity() {
                 }
                 password.isEmpty() -> {
                     Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show()
+                }
+                password.length < 6 -> {
+                    Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
                 }
                 password != confirmPassword -> {
                     Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()

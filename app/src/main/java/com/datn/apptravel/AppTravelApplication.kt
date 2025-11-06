@@ -5,9 +5,6 @@ import com.datn.apptravel.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-/**
- * Custom Application class for initializing app-wide dependencies
- */
 class AppTravelApplication : Application() {
     
     override fun onCreate() {

@@ -4,18 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.datn.apptravel.ui.base.BaseViewModel
 
-/**
- * ViewModel for boat operations
- */
 class BoatViewModel : BaseViewModel() {
     
     // Save boat result
     private val _saveBoatResult = MutableLiveData<Boolean>()
     val saveBoatResult: LiveData<Boolean> = _saveBoatResult
-    
-    /**
-     * Save boat details to trip
-     */
+
     fun saveBoat(tripId: String, boatDetails: String) {
         setLoading(true)
         

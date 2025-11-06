@@ -9,9 +9,6 @@ import com.datn.apptravel.ui.base.BaseFragment
 import com.datn.apptravel.ui.viewmodel.ProfileViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Fragment for displaying user profile
- */
 class ProfileFragment : BaseFragment<FragmentProfileBinding, ProfileViewModel>() {
     
     override val viewModel: ProfileViewModel by viewModel()
@@ -27,17 +24,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding, ProfileViewModel>()
         loadUserProfile()
         setupLogoutButton()
     }
-    
-    /**
-     * Load user profile data
-     */
+
     private fun loadUserProfile() {
         viewModel.getUserProfile()
     }
-    
-    /**
-     * Setup logout button
-     */
+
     private fun setupLogoutButton() {
         binding.btnLogout?.setOnClickListener {
             viewModel.logout()

@@ -10,9 +10,6 @@ import com.datn.apptravel.ui.viewmodel.LodgingViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
-/**
- * Activity for displaying lodging/accommodation details in a travel plan.
- */
 class LodgingDetailActivity : AppCompatActivity() {
     
     private val viewModel: LodgingViewModel by viewModel()
@@ -111,10 +108,7 @@ class LodgingDetailActivity : AppCompatActivity() {
             targetEditText.setText(formattedTime)
         }, hour, minute, true).show()
     }
-    
-    /**
-     * Save lodging details to trip
-     */
+
     private fun saveLodgingDetails() {
         // Validate inputs
         if (binding.etLodgingName.text.isNullOrEmpty() || binding.etCheckInDate.text.isNullOrEmpty() 

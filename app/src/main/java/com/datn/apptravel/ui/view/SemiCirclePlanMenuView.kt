@@ -12,10 +12,6 @@ import com.datn.apptravel.R
 import com.datn.apptravel.data.model.PlanType
 import kotlin.math.*
 
-/**
- * Custom view for displaying plan selection menu in a semi-circle with rotation
- * Shows 3 items at a time from 13 total options
- */
 class SemiCirclePlanMenuView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -133,10 +129,7 @@ class SemiCirclePlanMenuView @JvmOverloads constructor(
             invalidate()
         }
     }
-    
-    /**
-     * Rotate to previous item (counter-clockwise) with animation
-     */
+
     private fun rotatePrevious() {
         if (isAnimating) return
         
@@ -145,10 +138,7 @@ class SemiCirclePlanMenuView @JvmOverloads constructor(
         
         startAnimation()
     }
-    
-    /**
-     * Rotate to next item (clockwise) with animation
-     */
+
     private fun rotateNext() {
         if (isAnimating) return
         
@@ -191,11 +181,7 @@ class SemiCirclePlanMenuView @JvmOverloads constructor(
             invalidate()
         }
     }
-    
-    /**
-     * Get currently selected plan type based on rotation angle
-     * Item at center (0 degrees) is the selected one
-     */
+
     fun getSelectedPlanType(): PlanType {
         val anglePerItem = 360f / allPlanTypes.size
         

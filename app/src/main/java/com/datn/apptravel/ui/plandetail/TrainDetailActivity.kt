@@ -9,9 +9,6 @@ import com.datn.apptravel.ui.viewmodel.TrainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
-/**
- * Activity for train details and booking
- */
 class TrainDetailActivity : AppCompatActivity() {
     
     private val viewModel: TrainViewModel by viewModel()
@@ -83,10 +80,7 @@ class TrainDetailActivity : AppCompatActivity() {
             targetEditText.setText(formattedTime)
         }, hour, minute, true).show()
     }
-    
-    /**
-     * Save train details to trip
-     */
+
     private fun saveTrainDetails() {
         // Validate inputs
         if (binding.etTrainName.text.isNullOrEmpty() || binding.etDepartureTime.text.isNullOrEmpty() 

@@ -23,8 +23,10 @@ android {
             localPropertiesFile.inputStream().use { localProperties.load(it) }
         }
         
-        buildConfigField("String", "GEOAPIFY_API_KEY", "\"${localProperties.getProperty("GEOAPIFY_API_KEY", "")}\"")
-        buildConfigField("String", "GEOAPIFY_BASE_URL", "\"${localProperties.getProperty("GEOAPIFY_BASE_URL", "https://api.geoapify.com/")}\"")
+        buildConfigField("String", "GEOAPIFY_API_KEY", "\"${localProperties.getProperty("GEOAPIFY_API_KEY")}\"")
+        buildConfigField("String", "GEOAPIFY_BASE_URL", "\"${localProperties.getProperty("GEOAPIFY_BASE_URL")}\"")
+        buildConfigField("String", "AUTH_BASE_URL", "\"${localProperties.getProperty("AUTH_BASE_URL")}\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${localProperties.getProperty("GOOGLE_CLIENT_ID")}\"")
     }
 
     buildFeatures {
@@ -91,6 +93,9 @@ dependencies {
     
     // Play Services Location for GPS
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

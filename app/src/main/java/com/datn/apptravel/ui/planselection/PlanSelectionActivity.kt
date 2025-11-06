@@ -24,9 +24,6 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-/**
- * Activity for displaying map and selecting places by plan type
- */
 class PlanSelectionActivity : AppCompatActivity() {
     
     private val viewModel: PlanViewModel by viewModel()

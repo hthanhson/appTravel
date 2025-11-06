@@ -9,9 +9,6 @@ import com.datn.apptravel.ui.viewmodel.BoatViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
-/**
- * Activity for boat details and booking
- */
 class BoatDetailActivity : AppCompatActivity() {
     
     private val viewModel: BoatViewModel by viewModel()

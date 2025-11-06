@@ -19,7 +19,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Hide action bar for fullscreen splash
         supportActionBar?.hide()
 
         // Initialize splash screen with delay

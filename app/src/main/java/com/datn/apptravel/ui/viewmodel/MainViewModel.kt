@@ -7,9 +7,6 @@ import com.datn.apptravel.domain.repository.AuthRepository
 import com.datn.apptravel.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for MainActivity
- */
 class MainViewModel(private val authRepository: AuthRepository) : BaseViewModel() {
     
     private val _isUserLoggedIn = MutableLiveData<Boolean>()
@@ -18,10 +15,7 @@ class MainViewModel(private val authRepository: AuthRepository) : BaseViewModel(
     init {
         checkLoginStatus()
     }
-    
-    /**
-     * Check if user is logged in
-     */
+
     fun checkLoginStatus() {
         viewModelScope.launch {
             try {
@@ -33,10 +27,7 @@ class MainViewModel(private val authRepository: AuthRepository) : BaseViewModel(
             }
         }
     }
-    
-    /**
-     * Logout user
-     */
+
     fun logout() {
         viewModelScope.launch {
             setLoading(true)

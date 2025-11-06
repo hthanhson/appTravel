@@ -4,15 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.datn.apptravel.data.api.NetworkResult
-import com.datn.apptravel.data.model.MapPlace
+import com.datn.apptravel.data.model.response.MapPlace
 import com.datn.apptravel.data.model.PlanType
 import com.datn.apptravel.data.repository.PlacesRepository
 import com.datn.apptravel.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for plan operations and map display
- */
 class PlanViewModel(
     private val placesRepository: PlacesRepository
 ) : BaseViewModel() {
@@ -38,11 +35,7 @@ class PlanViewModel(
     
     // All fetched places (before filtering)
     private var allPlaces = listOf<MapPlace>()
-    
-    /**
-     * Select a plan type and fetch places
-     * Uses search location if available, otherwise uses current device location
-     */
+
     fun selectPlanType(planType: PlanType, currentLatitude: Double, currentLongitude: Double) {
         _selectedPlanType.value = planType
         
@@ -59,10 +52,7 @@ class PlanViewModel(
         
         fetchPlaces(planType, targetLat, targetLng)
     }
-    
-    /**
-     * Fetch places by category
-     */
+
     private fun fetchPlaces(planType: PlanType, latitude: Double, longitude: Double) {
         // Skip if NONE type
         if (planType == PlanType.NONE || planType.geoapifyCategory.isEmpty()) {
@@ -96,12 +86,7 @@ class PlanViewModel(
             }
         }
     }
-    
-    /**
-     * Search places by location name and filter by current plan type
-     * Example: Search "Hanoi" + select "Lodging" = Show hotels in Hanoi
-     * Saves the searched location coordinates for future plan type changes
-     */
+
     fun searchPlaces(query: String, currentLatitude: Double, currentLongitude: Double) {
         currentSearchQuery = query
         
@@ -181,10 +166,7 @@ class PlanViewModel(
             }
         }
     }
-    
-    /**
-     * Clear search and reload places at current device location
-     */
+
     fun clearSearch(currentLatitude: Double, currentLongitude: Double) {
         currentSearchQuery = null
         

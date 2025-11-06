@@ -7,11 +7,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/**
- * Singleton Retrofit client for making API requests
- */
 object RetrofitClient {
-    private val BASE_URL = BuildConfig.GEOAPIFY_BASE_URL
+    private val GEOAPIFY_BASE_URL = BuildConfig.GEOAPIFY_BASE_URL
+    private val AUTH_BASE_URL = BuildConfig.AUTH_BASE_URL
+    
     private const val TIMEOUT = 30L // seconds
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -27,10 +26,22 @@ object RetrofitClient {
 
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(GEOAPIFY_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+    
+    private val authRetrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(AUTH_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    
+    val authApiService: AuthApiService by lazy {
+        authRetrofit.create(AuthApiService::class.java)
     }
 
     inline fun <reified T> createService(): T = retrofit.create(T::class.java)

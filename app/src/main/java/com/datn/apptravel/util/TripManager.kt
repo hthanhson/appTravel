@@ -2,9 +2,6 @@ package com.datn.apptravel.util
 
 import java.util.UUID
 
-/**
- * Trip data class
- */
 data class Trip(
     val id: String = UUID.randomUUID().toString(),
     val title: String,
@@ -17,15 +14,9 @@ data class Trip(
     val isSaved: Boolean = false
 )
 
-/**
- * Manager for handling trips data
- */
 class TripManager {
     private val trips = mutableListOf<Trip>()
-    
-    /**
-     * Create a sample trip for testing
-     */
+
     fun createSampleTrip() {
         // Add sample trips
         val parisTrip = Trip(
@@ -57,47 +48,31 @@ class TripManager {
         trips.add(tokyoTrip)
     }
     
-    /**
-     * Get all trips
-     */
+
     fun getAllTrips(): List<Trip> {
         return trips.toList()
     }
-    
-    /**
-     * Add a new trip
-     */
+
     fun addTrip(trip: Trip) {
         trips.add(trip)
     }
     
-    /**
-     * Delete a trip
-     */
+
     fun deleteTrip(tripId: String) {
         trips.removeIf { it.id == tripId }
     }
-    
-    /**
-     * Update a trip
-     */
+
     fun updateTrip(updatedTrip: Trip) {
         val index = trips.indexOfFirst { it.id == updatedTrip.id }
         if (index != -1) {
             trips[index] = updatedTrip
         }
     }
-    
-    /**
-     * Get a trip by ID
-     */
+
     fun getTripById(tripId: String): Trip? {
         return trips.find { it.id == tripId }
     }
-    
-    /**
-     * Toggle saved status of a trip
-     */
+
     fun toggleSavedStatus(tripId: String) {
         val index = trips.indexOfFirst { it.id == tripId }
         if (index != -1) {

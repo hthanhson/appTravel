@@ -11,9 +11,6 @@ import com.datn.apptravel.ui.base.BaseFragment
 import com.datn.apptravel.ui.viewmodel.TripsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Fragment for displaying user trips
- */
 class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsBinding, TripsViewModel>() {
     
     override val viewModel: TripsViewModel by viewModel()

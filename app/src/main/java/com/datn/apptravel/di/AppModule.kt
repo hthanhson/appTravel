@@ -23,10 +23,6 @@ import com.datn.apptravel.ui.viewmodel.OnboardingViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-
-/**
- * Koin dependency injection module
- */
 val appModule = module {
     // API Service
     single { RetrofitClient.createService<ApiService>() }
@@ -37,6 +33,7 @@ val appModule = module {
     // Repositories
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     single { com.datn.apptravel.data.repository.PlacesRepository(get()) }
+    single { com.datn.apptravel.data.repository.AuthRepository(androidContext()) }
     
     // ViewModels
     viewModel { SplashViewModel(get()) }
@@ -46,7 +43,7 @@ val appModule = module {
     viewModel { NotificationViewModel() }
     viewModel { ProfileViewModel(get()) }
     viewModel { TripsViewModel() }
-    viewModel { AuthViewModel() }
+    viewModel { AuthViewModel(get<com.datn.apptravel.data.repository.AuthRepository>()) }
     viewModel { TripViewModel() }
     viewModel { TripDetailViewModel() }
     viewModel { PlanViewModel(get()) }

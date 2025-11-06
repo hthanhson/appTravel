@@ -8,9 +8,6 @@ import com.datn.apptravel.ui.base.BaseFragment
 import com.datn.apptravel.ui.viewmodel.NotificationViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Fragment for displaying user notifications
- */
 class NotificationFragment : BaseFragment<com.datn.apptravel.databinding.FragmentNotificationBinding, NotificationViewModel>() {
     
     override val viewModel: NotificationViewModel by viewModel()
@@ -25,10 +22,7 @@ class NotificationFragment : BaseFragment<com.datn.apptravel.databinding.Fragmen
         // Setup UI components
         loadNotifications()
     }
-    
-    /**
-     * Load notifications data
-     */
+
     private fun loadNotifications() {
         viewModel.getNotifications()
     }
