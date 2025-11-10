@@ -51,20 +51,32 @@ class TripMapActivity : AppCompatActivity() {
             finish()
         }
 
-        // Setup RecyclerView with scroll listener
+        // Setup RecyclerView with HORIZONTAL layout and scroll listener
         planAdapter = PlanMapAdapter(plans) { position, plan ->
             onPlanClicked(position, plan)
         }
 
         binding.rvPlans.apply {
-            layoutManager = LinearLayoutManager(this@TripMapActivity)
+            layoutManager = LinearLayoutManager(this@TripMapActivity, LinearLayoutManager.HORIZONTAL, false)
             adapter = planAdapter
+            
+            // Add snap helper to center items when scrolling
+            val snapHelper = androidx.recyclerview.widget.LinearSnapHelper()
+            snapHelper.attachToRecyclerView(this)
             
             // Detect scroll to highlight plans
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     highlightVisiblePlan()
+                }
+                
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    // When scroll stops, highlight the centered item
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        highlightVisiblePlan()
+                    }
                 }
             })
         }
@@ -296,11 +308,35 @@ class TripMapActivity : AppCompatActivity() {
 
     private fun highlightVisiblePlan() {
         val layoutManager = binding.rvPlans.layoutManager as? LinearLayoutManager ?: return
-        val firstVisible = layoutManager.findFirstCompletelyVisibleItemPosition()
         
-        if (firstVisible >= 0 && firstVisible < plans.size) {
-            planAdapter.highlightPlan(firstVisible)
-            highlightMarker(firstVisible)
+        // For horizontal scroll, find the item closest to center
+        val recyclerViewCenter = binding.rvPlans.width / 2
+        var closestPosition = -1
+        var closestDistance = Int.MAX_VALUE
+        
+        val firstVisible = layoutManager.findFirstVisibleItemPosition()
+        val lastVisible = layoutManager.findLastVisibleItemPosition()
+        
+        for (i in firstVisible..lastVisible) {
+            val view = layoutManager.findViewByPosition(i) ?: continue
+            val viewCenter = (view.left + view.right) / 2
+            val distance = Math.abs(recyclerViewCenter - viewCenter)
+            
+            if (distance < closestDistance) {
+                closestDistance = distance
+                closestPosition = i
+            }
+        }
+        
+        if (closestPosition >= 0 && closestPosition < plans.size) {
+            planAdapter.highlightPlan(closestPosition)
+            highlightMarker(closestPosition)
+            highlightRouteSegment(closestPosition)
+            
+            // Optional: Center map on the highlighted plan
+            val plan = plans[closestPosition]
+            val geoPoint = GeoPoint(plan.latitude, plan.longitude)
+            binding.mapView.controller.animateTo(geoPoint)
         }
     }
 

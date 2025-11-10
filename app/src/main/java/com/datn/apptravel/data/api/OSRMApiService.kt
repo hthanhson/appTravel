@@ -21,8 +21,4 @@ interface OSRMApiService {
         @Query("geometries") geometries: String = "geojson",
         @Query("steps") steps: Boolean = true
     ): Response<OSRMResponse>
-    
-    companion object {
-        const val BASE_URL = "https://router.project-osrm.org/"
-    }
 }

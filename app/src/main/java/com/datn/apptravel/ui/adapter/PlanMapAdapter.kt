@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.datn.apptravel.R
-import com.datn.apptravel.databinding.ItemPlanMapBinding
+import com.datn.apptravel.databinding.ItemPlanMapHorizontalBinding
 import com.datn.apptravel.model.PlanLocation
 
 class PlanMapAdapter(
@@ -16,7 +16,7 @@ class PlanMapAdapter(
     private var highlightedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlanViewHolder {
-        val binding = ItemPlanMapBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemPlanMapHorizontalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PlanViewHolder(binding)
     }
 
@@ -46,15 +46,15 @@ class PlanMapAdapter(
         }
     }
 
-    inner class PlanViewHolder(private val binding: ItemPlanMapBinding) :
+    inner class PlanViewHolder(private val binding: ItemPlanMapHorizontalBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(plan: PlanLocation, position: Int) {
             binding.apply {
                 tvPlanName.text = plan.name
                 tvTime.text = plan.time
-                tvPlanDetail.text = plan.detail
-                ivPlanIcon.setImageResource(plan.iconResId)
+                tvLocation.text = plan.detail
+                ivPlanImage.setImageResource(plan.iconResId)
 
                 // Highlight effect
                 val isHighlighted = position == highlightedPosition
@@ -63,13 +63,13 @@ class PlanMapAdapter(
                     cardPlan.setCardBackgroundColor(
                         ContextCompat.getColor(binding.root.context, R.color.highlight_background)
                     )
-                    cardPlan.cardElevation = 8f
+                    cardPlan.cardElevation = 12f
                 } else {
                     highlightIndicator.visibility = android.view.View.GONE
                     cardPlan.setCardBackgroundColor(
                         ContextCompat.getColor(binding.root.context, android.R.color.white)
                     )
-                    cardPlan.cardElevation = 2f
+                    cardPlan.cardElevation = 4f
                 }
 
                 cardPlan.setOnClickListener {

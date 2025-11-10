@@ -8,7 +8,7 @@ data class OSRMResponse(
 )
 
 data class Route(
-    val geometry: JsonElement,  // Can be String (polyline) or JsonObject (geojson)
+    val geometry: JsonElement,
     val legs: List<Leg>,
     val distance: Double,
     val duration: Double

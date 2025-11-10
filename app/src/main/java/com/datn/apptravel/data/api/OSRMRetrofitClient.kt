@@ -1,5 +1,6 @@
 package com.datn.apptravel.data.api
 
+import com.datn.apptravel.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,12 +16,12 @@ object OSRMRetrofitClient {
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
         .build()
     
     private val retrofit = Retrofit.Builder()
-        .baseUrl(OSRMApiService.BASE_URL)
+        .baseUrl(BuildConfig.OSRM_BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
