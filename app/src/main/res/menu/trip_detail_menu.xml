@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_view_collection"
-        android:title="View Collection" />
+        android:id="@+id/action_view_map"
+        android:title="View Map" />
     <item
         android:id="@+id/action_edit_trip"
         android:title="Edit Trip details" />

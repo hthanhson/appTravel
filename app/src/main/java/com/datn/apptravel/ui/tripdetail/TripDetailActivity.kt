@@ -120,6 +120,11 @@ class TripDetailActivity : AppCompatActivity() {
         
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.action_view_map -> {
+                    // Open map view
+                    navigateToMapView()
+                    true
+                }
                 R.id.action_edit_trip -> {
                     // Open trip edit
                     android.widget.Toast.makeText(this, "Edit trip coming soon", android.widget.Toast.LENGTH_SHORT).show()
@@ -128,11 +133,6 @@ class TripDetailActivity : AppCompatActivity() {
                 R.id.action_delete_trip -> {
                     // Show delete confirmation
                     showDeleteConfirmation()
-                    true
-                }
-                R.id.action_view_collection -> {
-                    // Share trip
-                    shareTrip()
                     true
                 }
                 else -> false
@@ -155,25 +155,16 @@ class TripDetailActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun shareTrip() {
-        val trip = viewModel.tripDetails.value
-        val shareText = if (trip != null) {
-            "Check out my trip to ${trip.destination}! From ${trip.startDate} to ${trip.endDate}"
-        } else {
-            "Check out my awesome trip!"
-        }
-        
-        val shareIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, shareText)
-            type = "text/plain"
-        }
-        startActivity(Intent.createChooser(shareIntent, "Share trip via"))
-    }
-
     private fun navigateToPlanSelection() {
         val intent = Intent(this, PlanSelectionActivity::class.java)
         intent.putExtra("tripId", tripId)
+        startActivity(intent)
+    }
+
+    private fun navigateToMapView() {
+        val intent = Intent(this, com.datn.apptravel.ui.tripmap.TripMapActivity::class.java)
+        intent.putExtra("tripId", tripId)
+        intent.putExtra("tripTitle", viewModel.tripDetails.value?.title ?: "Trip")
         startActivity(intent)
     }
 }

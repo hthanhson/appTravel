@@ -14,4 +14,5 @@
     <color name="brown_warm">#8B7355</color>
     <color name="beige_light">#F9F5F0</color>
     <color name="dark_brown">#3E2723</color>
+    <color name="highlight_background">#EFF6FF</color>
 </resources>
