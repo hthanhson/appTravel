@@ -1,14 +1,30 @@
 package com.datn.apptravel.data.model
 
 data class User(
-    val id: Long,
-    val firstName: String,
-    val lastName: String,
-    val email: String,
+    val id: String = "",                    // Firebase UID (String instead of Long)
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String = "",
     val profilePicture: String? = null,
-    val provider: AuthProvider? = null,     // AuthProvider enum: LOCAL, GOOGLE
+    val provider: String? = null,           // "LOCAL" or "GOOGLE" (String for Firestore)
     val providerId: String? = null,         // Google ID, Facebook ID, etc.
-    val enabled: Boolean = true,            // Account enabled status
-    val createdAt: String? = null,
-    val updatedAt: String? = null
-)
+    val enabled: Boolean = true,
+    val createdAt: Long? = null,
+    val updatedAt: Long? = null
+) {
+    constructor() : this("", "", "", "")
+    fun toMap(): Map<String, Any?> {
+        return hashMapOf(
+            "id" to id,
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "email" to email,
+            "profilePicture" to profilePicture,
+            "provider" to provider,
+            "providerId" to providerId,
+            "enabled" to enabled,
+            "createdAt" to createdAt,
+            "updatedAt" to updatedAt
+        )
+    }
+}

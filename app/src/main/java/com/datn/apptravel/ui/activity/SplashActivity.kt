@@ -49,9 +49,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     }
 
     @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         // Disable back button on splash screen
-        // Do nothing - don't call super to prevent going back
+        // Intentionally not calling super to prevent going back
     }
 
     companion object {

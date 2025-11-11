@@ -29,9 +29,10 @@ val appModule = module {
     // Local storage
     single { SessionManager(androidContext()) }
     
-    // Repositories
+    // Repositories - Firebase
+    single { AuthRepository() }
     single { com.datn.apptravel.data.repository.PlacesRepository(get()) }
-    single { AuthRepository(androidContext()) }
+
     
     // ViewModels
     viewModel { SplashViewModel(get()) }

@@ -24,12 +24,15 @@ class ForgotPasswordActivity : AppCompatActivity() {
         setupUI()
         
         // Observe reset password result
-        viewModel.resetPasswordResult.observe(this) { success ->
-            if (success) {
-                showResetSuccessMessage()
-            } else {
-                Toast.makeText(this, "Failed to send reset email", Toast.LENGTH_SHORT).show()
-            }
+        viewModel.resetPasswordResult.observe(this) { result ->
+            result.fold(
+                onSuccess = {
+                    showResetSuccessMessage()
+                },
+                onFailure = { error ->
+                    Toast.makeText(this, "Failed to send reset email: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
     

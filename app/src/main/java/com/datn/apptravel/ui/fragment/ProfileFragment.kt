@@ -1,10 +1,12 @@
 package com.datn.apptravel.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.datn.apptravel.databinding.FragmentProfileBinding
+import com.datn.apptravel.ui.auth.SignInActivity
 import com.datn.apptravel.ui.base.BaseFragment
 import com.datn.apptravel.ui.viewmodel.ProfileViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,6 +25,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding, ProfileViewModel>()
         // Setup UI components
         loadUserProfile()
         setupLogoutButton()
+        observeLogoutResult()
     }
 
     private fun loadUserProfile() {
@@ -32,6 +35,18 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding, ProfileViewModel>()
     private fun setupLogoutButton() {
         binding.btnLogout?.setOnClickListener {
             viewModel.logout()
+        }
+    }
+    
+    private fun observeLogoutResult() {
+        viewModel.logoutResult.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                // Navigate to SignInActivity and clear back stack
+                val intent = Intent(requireContext(), SignInActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
+            }
         }
     }
     

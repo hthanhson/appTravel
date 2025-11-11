@@ -8,7 +8,10 @@ import com.datn.apptravel.ui.base.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SplashViewModel(private val authRepository: AuthRepository) : BaseViewModel() {
+class SplashViewModel(
+    private val authRepository: AuthRepository,
+
+) : BaseViewModel() {
     
     private val _navigateToNext = MutableLiveData<SplashNavigationState>()
     val navigateToNext: LiveData<SplashNavigationState> = _navigateToNext

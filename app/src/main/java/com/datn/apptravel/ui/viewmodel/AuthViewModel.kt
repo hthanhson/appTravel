@@ -3,74 +3,61 @@ package com.datn.apptravel.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.datn.apptravel.data.model.request.ForgotPasswordRequest
-import com.datn.apptravel.data.model.request.GoogleTokenRequest
-import com.datn.apptravel.data.model.request.LoginRequest
-import com.datn.apptravel.data.model.request.SignUpRequest
+import com.datn.apptravel.data.model.User
 import com.datn.apptravel.data.repository.AuthRepository
 import com.datn.apptravel.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
-
 
 class AuthViewModel(
     private val authRepository: AuthRepository
 ) : BaseViewModel() {
 
     // Sign in result
-    private val _signInResult = MutableLiveData<Result<String>>()
-    val signInResult: LiveData<Result<String>> = _signInResult
+    private val _signInResult = MutableLiveData<Result<User>>()
+    val signInResult: LiveData<Result<User>> = _signInResult
 
     // Sign up result
-    private val _signUpResult = MutableLiveData<Result<String>>()
-    val signUpResult: LiveData<Result<String>> = _signUpResult
+    private val _signUpResult = MutableLiveData<Result<User>>()
+    val signUpResult: LiveData<Result<User>> = _signUpResult
 
     // Google sign in result
-    private val _googleSignInResult = MutableLiveData<Result<String>>()
-    val googleSignInResult: LiveData<Result<String>> = _googleSignInResult
+    private val _googleSignInResult = MutableLiveData<Result<User>>()
+    val googleSignInResult: LiveData<Result<User>> = _googleSignInResult
 
     // Reset password result
-    private val _resetPasswordResult = MutableLiveData<Boolean>()
-    val resetPasswordResult: LiveData<Boolean> = _resetPasswordResult
-
+    private val _resetPasswordResult = MutableLiveData<Result<Unit>>()
+    val resetPasswordResult: LiveData<Result<Unit>> = _resetPasswordResult
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             setLoading(true)
             try {
-                val request = LoginRequest(email, password)
-                val response = authRepository.login(request)
-
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    _signInResult.value = Result.success("Sign in successful")
-                } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Sign in failed"
-                    _signInResult.value = Result.failure(Exception(errorMsg))
+                val result = authRepository.login(email, password)
+                _signInResult.value = result
+                
+                if (result.isFailure) {
+                    setError(result.exceptionOrNull()?.message ?: "Sign in failed")
                 }
             } catch (e: Exception) {
                 _signInResult.value = Result.failure(e)
+                setError(e.message ?: "Sign in failed")
             } finally {
                 setLoading(false)
             }
         }
     }
-
-
     fun signUp(firstName: String, lastName: String, email: String, password: String) {
         viewModelScope.launch {
             setLoading(true)
             try {
-                val request = SignUpRequest(firstName, lastName, email, password)
-                val response = authRepository.signUp(request)
-
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    _signUpResult.value = Result.success("Sign up successful")
-                } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Sign up failed"
-                    _signUpResult.value = Result.failure(Exception(errorMsg))
+                val result = authRepository.signUp(email, password, firstName, lastName)
+                _signUpResult.value = result
+                
+                if (result.isFailure) {
+                    setError(result.exceptionOrNull()?.message ?: "Sign up failed")
                 }
             } catch (e: Exception) {
                 _signUpResult.value = Result.failure(e)
+                setError(e.message ?: "Sign up failed")
             } finally {
                 setLoading(false)
             }
@@ -81,18 +68,15 @@ class AuthViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                val request = GoogleTokenRequest(idToken)
-                val response = authRepository.googleSignIn(request)
-
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    _googleSignInResult.value = Result.success("Google sign in successful")
-                } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Google sign in failed"
-                    _googleSignInResult.value = Result.failure(Exception(errorMsg))
+                val result = authRepository.signInWithGoogle(idToken)
+                _googleSignInResult.value = result
+                
+                if (result.isFailure) {
+                    setError(result.exceptionOrNull()?.message ?: "Google sign in failed")
                 }
             } catch (e: Exception) {
                 _googleSignInResult.value = Result.failure(e)
+                setError(e.message ?: "Google sign in failed")
             } finally {
                 setLoading(false)
             }
@@ -102,19 +86,18 @@ class AuthViewModel(
 
     fun resetPassword(email: String) {
         viewModelScope.launch {
-            setLoading(true);
+            setLoading(true)
             try {
-                val request = ForgotPasswordRequest(email);
-                val response = authRepository.forgotPassword(request)
-                if (response.isSuccessful) {
-                    _resetPasswordResult.value = true
-                } else {
-                    _resetPasswordResult.value = false
+                val result = authRepository.forgotPassword(email)
+                _resetPasswordResult.value = result
+                
+                if (result.isFailure) {
+                    setError(result.exceptionOrNull()?.message ?: "Failed to send reset email")
                 }
-
             } catch (e: Exception) {
-                _resetPasswordResult.value =false
-            }finally {
+                _resetPasswordResult.value = Result.failure(e)
+                setError(e.message ?: "Failed to send reset email")
+            } finally {
                 setLoading(false)
             }
         }

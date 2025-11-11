@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.datn.apptravel.BuildConfig
 import com.datn.apptravel.R
 import com.datn.apptravel.ui.activity.MainActivity
 import com.datn.apptravel.ui.viewmodel.AuthViewModel
@@ -38,9 +37,11 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
         
         // Configure Google Sign-In
+        // Use default_web_client_id from google-services.json
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(BuildConfig.GOOGLE_CLIENT_ID)
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
+            .requestProfile()
             .build()
         
         googleSignInClient = GoogleSignIn.getClient(this, gso)
@@ -112,8 +113,11 @@ class SignInActivity : AppCompatActivity() {
     }
     
     private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
+        // Sign out first to force account picker to show every time
+        googleSignInClient.signOut().addOnCompleteListener {
+            val signInIntent = googleSignInClient.signInIntent
+            googleSignInLauncher.launch(signInIntent)
+        }
     }
     
     private fun handleGoogleSignInResult(completedTask: Task<GoogleSignInAccount>) {
@@ -122,13 +126,13 @@ class SignInActivity : AppCompatActivity() {
             val idToken = account.idToken
             
             if (idToken != null) {
-                Log.d("SignInActivity", "Google ID Token: $idToken")
+                Log.d("SignInActivity", "Google ID Token received")
                 viewModel.signInWithGoogle(idToken)
             } else {
                 Toast.makeText(this, "Failed to get ID token", Toast.LENGTH_SHORT).show()
             }
         } catch (e: ApiException) {
-            Log.e("SignInActivity", "Google sign in failed", e)
+            Log.e("SignInActivity", "Google sign in failed with code: ${e.statusCode}", e)
             Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -140,28 +144,19 @@ class SignInActivity : AppCompatActivity() {
         // Create a sample trip using TripManager
         MainActivity.tripManager.createSampleTrip()
     }
-    
-    /**
-     * Navigate to Main screen
-     */
+
     private fun navigateToMain() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
-    
-    /**
-     * Navigate to Sign Up screen
-     */
+
     private fun navigateToSignUp() {
         val intent = Intent(this, SignUpActivity::class.java)
         startActivity(intent)
     }
-    
-    /**
-     * Navigate to Forgot Password screen
-     */
+
     private fun navigateToForgotPassword() {
         val intent = Intent(this, ForgotPasswordActivity::class.java)
         startActivity(intent)

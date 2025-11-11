@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.datn.apptravel.R
+import com.datn.apptravel.data.repository.AuthRepository
 import com.datn.apptravel.ui.base.BaseFragment
 import com.datn.apptravel.ui.viewmodel.TripsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 
 class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsBinding, TripsViewModel>() {
     
     override val viewModel: TripsViewModel by viewModel()
+    private val authRepository: AuthRepository by inject()
     
     // Track currently selected tab
     private var currentTab = TAB_ONGOING
@@ -38,10 +43,31 @@ class TripsFragment : BaseFragment<com.datn.apptravel.databinding.FragmentTripsB
     
     override fun setupUI() {
         // Setup UI components
+        loadUserName()
         setupAddTripButton()
         setupRecyclerViews()
         observeTrips()
         loadTrips()
+    }
+    
+    /**
+     * Load and display user name
+     */
+    private fun loadUserName() {
+        lifecycleScope.launch {
+            authRepository.currentUser.collect { user ->
+                user?.let {
+                    val displayName = if (it.lastName.isNotEmpty()) {
+                        it.lastName
+                    } else if (it.firstName.isNotEmpty()) {
+                        it.firstName
+                    } else {
+                        "User"
+                    }
+                    binding.tvUserName.text = displayName
+                }
+            }
+        }
     }
     
     private fun setupAddTripButton() {
