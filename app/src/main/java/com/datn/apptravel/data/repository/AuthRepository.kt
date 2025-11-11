@@ -54,10 +54,13 @@ class AuthRepository {
             // Create user document in Firestore
             val user = User(
                 id = firebaseUser.uid,
-                email = email,
                 firstName = firstName,
                 lastName = lastName,
+                email = email,
+                role = "user",
+                profilePicture = null,
                 provider = "LOCAL",
+                providerId = null,
                 enabled = true,
                 createdAt = System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis()
@@ -120,9 +123,10 @@ class AuthRepository {
                 // New user - create document in Firestore
                 user = User(
                     id = firebaseUser.uid,
-                    email = email,
                     firstName = firebaseUser.displayName?.split(" ")?.firstOrNull() ?: "",
                     lastName = firebaseUser.displayName?.split(" ")?.drop(1)?.joinToString(" ") ?: "",
+                    email = email,
+                    role = "user",
                     profilePicture = firebaseUser.photoUrl?.toString(),
                     provider = "GOOGLE",
                     providerId = firebaseUser.uid,
@@ -138,7 +142,7 @@ class AuthRepository {
             
             _currentUser.value = user
             
-            Log.d(TAG, "Google sign in successful for user: ${user.email}")
+            Log.d(TAG, "Google sign in successful for user: ${user!!.email}")
             Result.success(user)
             
         } catch (e: Exception) {
