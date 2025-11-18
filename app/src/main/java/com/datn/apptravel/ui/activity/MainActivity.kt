@@ -51,7 +51,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun onResume() {
         super.onResume()
+        // Refresh trips when returning from CreateTripActivity
         currentTripsFragment?.refreshTrips()
+        
+        // Check login status
         viewModel.checkLoginStatus()
     }
 
