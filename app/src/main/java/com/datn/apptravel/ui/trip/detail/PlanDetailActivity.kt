@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -15,29 +14,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.datn.apptravel.R
-import com.datn.apptravel.data.model.Plan
 import com.datn.apptravel.data.model.PlanType
-import com.datn.apptravel.data.repository.TripRepository
 import com.datn.apptravel.databinding.ActivityPlanDetailBinding
 import com.datn.apptravel.ui.trip.adapter.PhotoCollectionAdapter
+import com.datn.apptravel.ui.trip.viewmodel.PlanDetailViewModel
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlanDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlanDetailBinding
-    private var plan: Plan? = null
+    private val viewModel: PlanDetailViewModel by viewModel()
     private var planId: String? = null
     private var tripId: String? = null
     private lateinit var photoAdapter: PhotoCollectionAdapter
-    private val tripRepository: TripRepository by inject()
-    private val selectedPhotos = mutableListOf<String>()
 
     // Multiple image picker launcher
     private val multipleImagePickerLauncher = registerForActivityResult(
@@ -67,7 +61,64 @@ class PlanDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupUI()
+        observeViewModel()
         loadPlanData()
+    }
+
+    private fun observeViewModel() {
+        // Observe photos
+        viewModel.photos.observe(this) { photos ->
+            photoAdapter.updatePhotos(photos)
+        }
+
+        // Observe likes count
+        viewModel.likesCount.observe(this) { count ->
+            binding.tvLikesCount.text = count.toString()
+        }
+
+        // Observe comments count
+        viewModel.commentsCount.observe(this) { count ->
+            binding.tvCommentsCount.text = count.toString()
+            binding.cardComments.visibility = if (count > 0) View.VISIBLE else View.GONE
+        }
+
+        // Observe like status
+        viewModel.isLiked.observe(this) { isLiked ->
+            if (isLiked) {
+                binding.ivLike.setImageResource(R.drawable.ic_heart_filled)
+            } else {
+                binding.ivLike.setImageResource(R.drawable.ic_heart_outline)
+            }
+            binding.ivLike.tag = isLiked
+        }
+
+        // Observe upload success
+        viewModel.uploadSuccess.observe(this) { success ->
+            if (success) {
+                Toast.makeText(this, "Photos uploaded successfully!", Toast.LENGTH_SHORT).show()
+                viewModel.resetUploadSuccess()
+            }
+        }
+
+        // Observe comment posted
+        viewModel.commentPosted.observe(this) { posted ->
+            if (posted) {
+                viewModel.resetCommentPosted()
+            }
+        }
+
+        // Observe loading state
+        viewModel.isLoading.observe(this) { isLoading ->
+            // TODO: Show/hide loading indicator if needed
+        }
+
+        // Observe errors
+        viewModel.error.observe(this) { error ->
+            error?.let {
+                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
     }
 
     private fun setupUI() {
@@ -96,8 +147,8 @@ class PlanDetailActivity : AppCompatActivity() {
         }
 
         binding.ivLike.setOnClickListener {
-            // TODO: Toggle like
-            toggleLike()
+            // Toggle like through ViewModel
+            viewModel.toggleLike()
         }
     }
 
@@ -105,8 +156,6 @@ class PlanDetailActivity : AppCompatActivity() {
         // Get data from intent
         planId = intent.getStringExtra(EXTRA_PLAN_ID)
         tripId = intent.getStringExtra(EXTRA_TRIP_ID)
-
-        Log.d("PlanDetailActivity", "Loaded from intent - tripId: $tripId, planId: $planId")
 
         val planTitle = intent.getStringExtra(EXTRA_PLAN_TITLE) ?: "Plan"
         val planTypeStr = intent.getStringExtra(EXTRA_PLAN_TYPE) ?: "OTHER"
@@ -116,6 +165,9 @@ class PlanDetailActivity : AppCompatActivity() {
         val location = intent.getStringExtra(EXTRA_LOCATION)
         val likesCount = intent.getIntExtra(EXTRA_LIKES_COUNT, 0)
         val commentsCount = intent.getIntExtra(EXTRA_COMMENTS_COUNT, 0)
+
+        // Set initial counts in ViewModel
+        viewModel.setInitialCounts(likesCount, commentsCount)
 
         val planType = try {
             PlanType.valueOf(planTypeStr)
@@ -146,49 +198,9 @@ class PlanDetailActivity : AppCompatActivity() {
         }
         binding.tvExpense.visibility = View.VISIBLE
 
-        // Set likes and comments count
-        binding.tvLikesCount.text = likesCount.toString()
-        binding.tvCommentsCount.text = commentsCount.toString()
-
-        // Show comments section if there are comments
-        if (commentsCount > 0) {
-            binding.cardComments.visibility = View.VISIBLE
-            // TODO: Load comments from API
-        } else {
-            binding.cardComments.visibility = View.GONE
-        }
-
         // Load photos from API if planId and tripId are available
         if (planId != null && tripId != null) {
-            loadPhotosFromApi(tripId!!, planId!!)
-        }
-    }
-
-    private fun loadPhotosFromApi(tripId: String, planId: String) {
-        lifecycleScope.launch {
-            try {
-                Log.d("PlanDetailActivity", "Loading photos from API - tripId: $tripId, planId: $planId")
-                val result = tripRepository.getPlanById(tripId, planId)
-
-                result.onSuccess { plan ->
-                    Log.d("PlanDetailActivity", "Loaded plan with photos: ${plan.photos}")
-
-                    // Update photos list
-                    plan.photos?.let { photosList ->
-                        if (photosList.isNotEmpty()) {
-                            selectedPhotos.clear()
-                            selectedPhotos.addAll(photosList)
-                            photoAdapter.updatePhotos(selectedPhotos)
-                            Log.d("PlanDetailActivity", "Updated adapter with ${photosList.size} photos")
-                        }
-                    }
-                }.onFailure { exception ->
-                    Log.e("PlanDetailActivity", "Failed to load photos", exception)
-                    // Don't show error toast - just fail silently as photos are optional
-                }
-            } catch (e: Exception) {
-                Log.e("PlanDetailActivity", "Error loading photos", e)
-            }
+            viewModel.loadPlanPhotos(tripId!!, planId!!)
         }
     }
 
@@ -320,14 +332,10 @@ class PlanDetailActivity : AppCompatActivity() {
         btnPost.setOnClickListener {
             val comment = etComment.text.toString().trim()
             if (comment.isNotEmpty()) {
-                // TODO: Post comment to backend
+                // Post comment through ViewModel
+                viewModel.postComment(comment)
                 Toast.makeText(this, "Comment posted!", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
-
-                // Update comments count
-                val currentCount = binding.tvCommentsCount.text.toString().toIntOrNull() ?: 0
-                binding.tvCommentsCount.text = (currentCount + 1).toString()
-                binding.cardComments.visibility = View.VISIBLE
             }
         }
 
@@ -339,94 +347,15 @@ class PlanDetailActivity : AppCompatActivity() {
         imm.showSoftInput(etComment, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun toggleLike() {
-        // TODO: Toggle like status in backend
-        val currentLikes = binding.tvLikesCount.text.toString().toIntOrNull() ?: 0
-        val isLiked = binding.ivLike.tag as? Boolean ?: false
-
-        if (isLiked) {
-            binding.ivLike.setImageResource(R.drawable.ic_heart_outline)
-            binding.tvLikesCount.text = (currentLikes - 1).toString()
-            binding.ivLike.tag = false
-        } else {
-            binding.ivLike.setImageResource(R.drawable.ic_heart_filled)
-            binding.tvLikesCount.text = (currentLikes + 1).toString()
-            binding.ivLike.tag = true
-        }
-    }
-
     private fun uploadPhotos(uris: List<Uri>) {
-        Toast.makeText(this, "Uploading ${uris.size} photos...", Toast.LENGTH_SHORT).show()
-
-        lifecycleScope.launch {
-            try {
-                val result = tripRepository.uploadImages(this@PlanDetailActivity, uris)
-
-                result.onSuccess { fileNames ->
-                    selectedPhotos.addAll(fileNames)
-                    photoAdapter.updatePhotos(selectedPhotos)
-
-                    // Save photo filenames to Plan in backend
-                    if (planId != null && tripId != null) {
-                        Log.d("PlanDetailActivity", "Saving photos - tripId: $tripId, planId: $planId, photos: $selectedPhotos")
-                        savePlanPhotos(tripId!!, planId!!, selectedPhotos)
-                    } else {
-                        val errorMsg = "Cannot save photos - tripId: $tripId, planId: $planId"
-                        Log.e("PlanDetailActivity", errorMsg)
-                        Toast.makeText(
-                            this@PlanDetailActivity,
-                            "Uploaded ${fileNames.size} photos but cannot save to plan. Missing IDs.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }.onFailure { exception ->
-                    Log.e("PlanDetailActivity", "Upload failed", exception)
-                    Toast.makeText(
-                        this@PlanDetailActivity,
-                        "Upload failed: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: Exception) {
-                Log.e("PlanDetailActivity", "Upload error", e)
-                Toast.makeText(
-                    this@PlanDetailActivity,
-                    "Error: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun savePlanPhotos(tripId: String, planId: String, photos: List<String>) {
-        lifecycleScope.launch {
-            try {
-                Log.d("PlanDetailActivity", "Calling updatePlanPhotos API...")
-                val result = tripRepository.updatePlanPhotos(tripId, planId, photos)
-
-                result.onSuccess { updatedPlan ->
-                    Log.d("PlanDetailActivity", "Successfully saved photos: ${updatedPlan.photos}")
-                    Toast.makeText(
-                        this@PlanDetailActivity,
-                        "Saved ${photos.size} photos to plan!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }.onFailure { exception ->
-                    Log.e("PlanDetailActivity", "Failed to save photos", exception)
-                    Toast.makeText(
-                        this@PlanDetailActivity,
-                        "Failed to save photos: ${exception.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            } catch (e: Exception) {
-                Log.e("PlanDetailActivity", "Error saving photos", e)
-                Toast.makeText(
-                    this@PlanDetailActivity,
-                    "Error saving photos: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        if (planId != null && tripId != null) {
+            viewModel.uploadPhotos(this, uris, tripId!!, planId!!)
+        } else {
+            Toast.makeText(
+                this,
+                "Cannot upload photos. Missing trip or plan ID.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
