@@ -92,12 +92,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Post"
-            android:textColor="@android:color/white"
+            android:textColor="@color/beige_light"
             android:textSize="15sp"
             android:textAllCaps="false"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
-            app:backgroundTint="#DC2626"
+            app:backgroundTint="#D5A66D"
             app:cornerRadius="8dp"
             style="@style/Widget.MaterialComponents.Button" />
 

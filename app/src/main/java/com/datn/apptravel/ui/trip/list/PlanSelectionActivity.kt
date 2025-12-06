@@ -39,38 +39,38 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class PlanSelectionActivity : AppCompatActivity() {
-    
+
     private val viewModel: PlanViewModel by viewModel()
     private var tripId: String? = null
     private lateinit var binding: ActivityPlanSelectionBinding
-    
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var myLocationOverlay: MyLocationNewOverlay? = null
-    
+
     private var currentLatitude = 21.0285
     private var currentLongitude = 105.8542
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Initialize OSMDroid configuration
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-        
+
         binding = ActivityPlanSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
         // Get trip ID from intent
         tripId = intent.getStringExtra("tripId")
-        
+
         // Initialize location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        
+
         setupMap()
         setupUI()
         setupObservers()
         checkLocationPermission()
     }
-    
+
     /**
      * Setup the map
      */
@@ -79,17 +79,17 @@ class PlanSelectionActivity : AppCompatActivity() {
             setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
             controller.setZoom(15.0)
-            
+
             // Set default position (Hanoi)
             controller.setCenter(GeoPoint(currentLatitude, currentLongitude))
         }
-        
+
         // Add location overlay
         myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), binding.mapView)
         myLocationOverlay?.enableMyLocation()
         binding.mapView.overlays.add(myLocationOverlay)
     }
-    
+
     /**
      * Set up the UI elements and click listeners
      */
@@ -103,7 +103,7 @@ class PlanSelectionActivity : AppCompatActivity() {
             // When plan type changes, reload places with current search query (if any)
             viewModel.selectPlanType(planType, currentLatitude, currentLongitude)
         }
-        
+
         // Set up search view
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -111,14 +111,14 @@ class PlanSelectionActivity : AppCompatActivity() {
                     if (it.isNotBlank()) {
                         // Search location and filter by selected plan type
                         viewModel.searchPlaces(it, currentLatitude, currentLongitude)
-                        
+
                         // Hide keyboard
                         binding.searchView.clearFocus()
                     }
                 }
                 return true
             }
-            
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 // Clear search when text is empty
                 if (newText.isNullOrBlank()) {
@@ -127,11 +127,11 @@ class PlanSelectionActivity : AppCompatActivity() {
                 return true
             }
         })
-        
+
         // Don't load initial data until we have GPS location
         // Will be loaded in getCurrentLocation() after GPS is ready
     }
-    
+
     /**
      * Setup observers for ViewModel LiveData
      */
@@ -139,7 +139,7 @@ class PlanSelectionActivity : AppCompatActivity() {
         viewModel.places.observe(this) { places ->
             // Clear existing markers (keep location overlay)
             binding.mapView.overlays.removeAll { it is Marker }
-            
+
             // Add markers for each place
             places.forEach { place ->
                 val marker = Marker(binding.mapView)
@@ -147,22 +147,22 @@ class PlanSelectionActivity : AppCompatActivity() {
                 marker.title = place.name
                 marker.snippet = place.address
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                
+
                 // Set click listener to show place detail popup
                 marker.setOnMarkerClickListener { clickedMarker, mapView ->
                     showPlaceDetailPopup(place)
                     true
                 }
-                
+
                 binding.mapView.overlays.add(marker)
             }
-            
+
             binding.mapView.invalidate()
-            
+
             if (places.isNotEmpty()) {
                 val planType = viewModel.selectedPlanType.value?.displayName ?: "places"
                 Toast.makeText(this, "Found ${places.size} $planType", Toast.LENGTH_SHORT).show()
-                
+
                 // Center on first result if it's a search
                 places.firstOrNull()?.let {
                     binding.mapView.controller.animateTo(GeoPoint(it.latitude, it.longitude))
@@ -171,23 +171,23 @@ class PlanSelectionActivity : AppCompatActivity() {
                 Toast.makeText(this, "No places found", Toast.LENGTH_SHORT).show()
             }
         }
-        
+
         viewModel.errorMessage.observe(this) { error ->
             if (error.isNotBlank()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
             }
         }
-        
+
         viewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
-        
+
         viewModel.selectedPlanType.observe(this) { planType ->
             // Update UI or show current selection
             // Toast.makeText(this, "Selected: ${planType.displayName}", Toast.LENGTH_SHORT).show()
         }
     }
-    
+
     /**
      * Show place detail popup with image, description and add button
      */
@@ -195,20 +195,20 @@ class PlanSelectionActivity : AppCompatActivity() {
         val bottomSheetDialog = BottomSheetDialog(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_place_detail_popup, null)
         bottomSheetDialog.setContentView(view)
-        
+
         // Find views
         val tvPlaceName = view.findViewById<TextView>(R.id.tvPlaceName)
         val tvPlaceDescription = view.findViewById<TextView>(R.id.tvPlaceDescription)
         val imgGallery1 = view.findViewById<ImageView>(R.id.imgGallery1)
         val imgGallery2 = view.findViewById<ImageView>(R.id.imgGallery2)
         val btnAddPlace = view.findViewById<Button>(R.id.btnAddPlace)
-        
+
         // Set place name
         tvPlaceName.text = place.name
-        
+
         // Set place description (use address if description is null)
         tvPlaceDescription.text = place.description ?: place.address ?: "No description available"
-        
+
         // Load gallery images
         place.galleryImages?.let { images ->
             if (images.isNotEmpty()) {
@@ -224,16 +224,16 @@ class PlanSelectionActivity : AppCompatActivity() {
                     .into(imgGallery2)
             }
         }
-        
+
         // Set add button click listener
         btnAddPlace.setOnClickListener {
             bottomSheetDialog.dismiss()
             openDetailActivity(place)
         }
-        
+
         bottomSheetDialog.show()
     }
-    
+
     /**
      * Open appropriate detail activity based on selected plan type
      */
@@ -244,14 +244,14 @@ class PlanSelectionActivity : AppCompatActivity() {
             PlanType.FLIGHT -> Intent(this, FlightDetailActivity::class.java)
             PlanType.BOAT -> Intent(this, BoatDetailActivity::class.java)
             PlanType.CAR_RENTAL -> Intent(this, CarRentalDetailActivity::class.java)
-            PlanType.ACTIVITY, PlanType.TOUR, PlanType.THEATER, PlanType.SHOPPING, 
+            PlanType.ACTIVITY, PlanType.TOUR, PlanType.THEATER, PlanType.SHOPPING,
             PlanType.CAMPING, PlanType.RELIGION -> Intent(this, ActivityDetailActivity::class.java)
             else -> {
                 Toast.makeText(this, "Please select a plan type first", Toast.LENGTH_SHORT).show()
                 return
             }
         }
-        
+
         intent.putExtra(EXTRA_TRIP_ID, tripId)
         intent.putExtra(EXTRA_PLACE_NAME, place.name)
         intent.putExtra(EXTRA_PLACE_ADDRESS, place.address)
@@ -259,7 +259,7 @@ class PlanSelectionActivity : AppCompatActivity() {
         intent.putExtra(EXTRA_PLACE_LONGITUDE, place.longitude)
         startActivity(intent)
     }
-    
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
         const val EXTRA_TRIP_ID = "tripId"
@@ -268,7 +268,7 @@ class PlanSelectionActivity : AppCompatActivity() {
         const val EXTRA_PLACE_LATITUDE = "placeLatitude"
         const val EXTRA_PLACE_LONGITUDE = "placeLongitude"
     }
-    
+
     /**
      * Check and request location permission
      */
@@ -287,7 +287,7 @@ class PlanSelectionActivity : AppCompatActivity() {
             getCurrentLocation()
         }
     }
-    
+
     /**
      * Get current location
      */
@@ -301,10 +301,10 @@ class PlanSelectionActivity : AppCompatActivity() {
                 location?.let {
                     currentLatitude = it.latitude
                     currentLongitude = it.longitude
-                    
+
                     // Update map center
                     binding.mapView.controller.setCenter(GeoPoint(currentLatitude, currentLongitude))
-                    
+
                     // Reload places with new location
                     val currentPlanType = binding.semiCircleMenu.getSelectedPlanType()
                     viewModel.selectPlanType(currentPlanType, currentLatitude, currentLongitude)
@@ -312,7 +312,7 @@ class PlanSelectionActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -325,18 +325,18 @@ class PlanSelectionActivity : AppCompatActivity() {
             }
         }
     }
-    
-    
+
+
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
     }
-    
+
     override fun onPause() {
         super.onPause()
         binding.mapView.onPause()
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         binding.mapView.onDetach()

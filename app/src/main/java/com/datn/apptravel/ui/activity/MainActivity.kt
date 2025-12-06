@@ -15,7 +15,10 @@ import com.datn.apptravel.ui.discover.search.SearchExploreFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.NavController
-
+import com.datn.apptravel.ui.trip.CreateTripActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     override val viewModel: MainViewModel by viewModel()
@@ -27,7 +30,16 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { v, insets ->
+//            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, 0)
+//            insets
+//        }
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            view.setPadding(0, 0, 0, 0)
+            WindowInsetsCompat.CONSUMED
+        }
         // Set default fragment
         if (savedInstanceState == null) {
             val tripsFragment = TripsFragment()
@@ -59,6 +71,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     private fun setupBottomNavigation() {
+        // FAB Add button
+        binding.fabAdd.setOnClickListener {
+            startActivity(Intent(this, CreateTripActivity::class.java))
+        }
+
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_trips -> {
@@ -69,10 +86,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
                     replaceFragment(NotificationFragment())
                     true
                 }
-                R.id.nav_add -> {
-                    startActivity(Intent(this, com.datn.apptravel.ui.trip.CreateTripActivity::class.java))
-                    true
-                }
+
+
                 R.id.nav_discover -> {
                     replaceFragment(DiscoverFragment())
                     true
